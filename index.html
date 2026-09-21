@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The Bake Alley - cozy baking ingredients and essentials for every great bake." />
+    <title>The Bake Alley | Where Every Great Bake Begins</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>.brand-logo{width:40px;height:40px;object-fit:cover;border-radius:50%;background:#fff;padding:2px;box-shadow:0 3px 10px rgba(86,57,34,.1)}</style>
+  </head>
+  <body>
+    <div class="announcement">Small-batch essentials, thoughtfully chosen for your kitchen <span>✦</span> Same-day local pickup available</div>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="The Bake Alley home"><img class="brand-logo" src="images/bakeAlley-Logo.jpg" alt="" /><span>The Bake <em>Alley</em></span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#products">Shop pantry</a><a href="#story">Our story</a><a href="#contact">Bulk orders</a>
+      </nav>
+      <a class="header-action" href="#products">Browse inventory <span>↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Your neighborhood baking cupboard</p>
+          <h1>Where every<br /><i>great bake</i> begins.</h1>
+          <p class="hero-text">Quality ingredients and cozy baking essentials to turn simple recipes into warm memories and sweet smiles.</p>
+          <a class="button button-dark" href="#products">Explore inventory <span>↓</span></a>
+          <div class="hero-note"><div class="avatar-stack"><span>J</span><span>M</span><span>S</span></div><span><strong>Loved by local bakers</strong><br />from first whisk to final crumb</span></div>
+        </div>
+        <div class="hero-art" aria-label="Freshly baked cinnamon rolls">
+          <div class="sun"></div><div class="scribble">made<br />with care</div>
+          <div class="bake-image"></div>
+          <div class="hero-sticker">Fresh<br /><strong>from the oven</strong></div>
+        </div>
+      </section>
+
+      <section class="story-strip" id="story">
+        <div class="story-intro"><p class="eyebrow">A little room to breathe</p><h2>Sift through the noise.<br /><i>Take a breath.</i></h2></div>
+        <blockquote>“Baking is our favorite kind of quiet. A few good ingredients, a warm oven, and something lovely to share.”<cite>— The Bake Alley team</cite></blockquote>
+        <div class="story-detail"><span class="line"></span><p>We make it easy to keep the good stuff close: dependable pantry staples, clever tools, and a little inspiration for your next warm memory.</p></div>
+      </section>
+
+      <section class="products-section" id="products">
+        <div class="section-heading"><div><p class="eyebrow">The pantry edit</p><h2>Good things for <i>good bakes.</i></h2></div><p class="inventory-caption">Curated ingredients & tools<br />for your next delicious idea.</p></div>
+        <div class="inventory-toolbar">
+          <div class="filters" role="tablist" aria-label="Product categories"><button class="filter active" data-category="All Items">All Items</button><button class="filter" data-category="Flours & Premixes">Flours & Premixes</button><button class="filter" data-category="Chocolate & Cocoa">Chocolate & Cocoa</button><button class="filter" data-category="Dairy & Fats">Dairy & Fats</button><button class="filter" data-category="Decorations & Packaging">Decorations & Packaging</button><button class="filter" data-category="Tools & Molds">Tools & Molds</button></div>
+          <div class="toolbar-bottom"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search the pantry..." aria-label="Search products" /></label><label class="toggle-label"><input id="available-only" type="checkbox" /><span class="toggle"></span> Available only</label></div>
+        </div>
+        <div class="inventory-status"><span id="result-count">Showing our favorites</span><span class="status-dot"></span><span>Pantry updated weekly</span></div>
+        <div class="product-grid" id="product-grid" aria-live="polite"></div>
+        <div class="empty-state" id="empty-state" hidden><strong>No ingredients found.</strong><span>Try another search or browse all items.</span></div>
+      </section>
+
+      <section class="testimonials">
+        <div class="section-heading compact"><div><p class="eyebrow">Baking with The Bake Alley</p><h2>Shared with <i>love.</i></h2></div><p class="inventory-caption">A few words from the people<br />who keep their ovens warm.</p></div>
+        <div class="testimonial-grid"><article><div class="quote-mark">“</div><p>The cocoa is wonderfully deep and smooth. Our brownies have never had so many people asking for “just one more.”</p><footer><span class="testimonial-avatar terracotta">L</span><span><strong>Leah M.</strong><small>Home baker, San Juan</small></span></footer></article><article><div class="quote-mark">“</div><p>Fast, kind service and a pantry that always seems to have exactly what my weekend bakes are missing.</p><footer><span class="testimonial-avatar sage">A</span><span><strong>Atelier Crumb</strong><small>Neighborhood pastry shop</small></span></footer></article><article><div class="quote-mark">“</div><p>The little details make shopping here feel special. My kids now choose our Saturday bake by picking the sprinkles.</p><footer><span class="testimonial-avatar oat">R</span><span><strong>Rina P.</strong><small>Sunday baker, Quezon City</small></span></footer></article></div>
+      </section>
+
+      <section class="contact-section" id="contact"><div><p class="eyebrow">Need a little more?</p><h2>Let's make room<br /><i>for your big bake.</i></h2></div><div class="contact-copy"><p>Planning a celebration, stocking a café, or just have a very specific chocolate craving? Tell us what you need and we’ll help you find it.</p><div class="contact-links"><a href="https://m.me/" target="_blank" rel="noreferrer"><span>↗</span> Messenger</a><a href="https://wa.me/" target="_blank" rel="noreferrer"><span>↗</span> WhatsApp</a><a href="viber://chat?number=+630000000000"><span>↗</span> Viber</a></div></div></section>
+    </main>
+
+    <footer class="site-footer"><div class="footer-top"><a class="brand light" href="#top" aria-label="The Bake Alley home"><img class="brand-logo" src="images/bakeAlley-Logo.jpg" alt="" /><span>The Bake <em>Alley</em></span></a><p>Baked with love in every detail.</p><div class="socials"><a href="#">Instagram</a><a href="#">Facebook</a></div></div><div class="footer-bottom"><span>Open Tue–Sun, 9:00 AM–6:00 PM</span><span>18 Malingap Street, Teachers Village, QC</span><span>© 2024 The Bake Alley</span></div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="script.js"></script>
+  </body>
+</html>

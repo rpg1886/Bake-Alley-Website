@@ -74,3 +74,5 @@ Prefer lightweight browser code, progressive enhancement, stable responsive dime
 Conclude with a concise implementation summary, validation result, and any remaining setup values or risks. When reviewing code, list actionable findings first, ordered by severity, with file links; mention test gaps after the findings.
 
 Always update the design document everytime there is a change in any of the codes C:\Users\Ryan\Projects\Bake-Alley-Website\Bake-Alley-Website\docs\Function-Design.md
+
+tracking file with user prompts, reasoning summary, and generated artifcats. should be created under "agents/prompts/" with a filename that includes the date and time of the prompt

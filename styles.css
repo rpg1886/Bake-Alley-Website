@@ -958,3 +958,38 @@ i {
     color: #8c7e72;
     cursor: not-allowed;
 }
+
+
+/* Category Dropdown Select Styling */
+.category-dropdown-select {
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--brown);
+    font: 600 12px 'DM Sans', sans-serif;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    appearance: auto;
+    align-self: center;
+}
+
+.category-dropdown-select:hover {
+    border-color: var(--terracotta);
+    color: var(--terracotta-dark);
+}
+
+.category-dropdown-select.active-select {
+    background: var(--brown);
+    color: #ffffff;
+    border-color: var(--brown);
+}
+
+.category-dropdown-select option {
+    background: var(--paper);
+    color: var(--brown);
+    font: 500 13px 'DM Sans', sans-serif;
+    padding: 6px 10px;
+}

@@ -12501,6 +12501,12 @@ function createChatLink(product) {
 }
 
 // Setup Category Dropdown & Quick Filter Buttons
+function createChatLink(product) {
+  const msg = encodeURIComponent(`Hi Bake Alley! I'd like to reserve: ${product.name} (${product.size}) - ${peso(product.price)}. Is it available for pickup?`);
+  return `viber://chat?number=%2B639552181590&draft=${msg}`;
+}
+
+// Setup Category Dropdown & Quick Filter Buttons
 function setupCategoryFilters() {
   const selectElem = document.querySelector('#category-select');
   const filtersContainer = document.querySelector('.filters');
@@ -12531,6 +12537,8 @@ function setupCategoryFilters() {
       render();
     };
   }
+
+}
 
   // Populate Quick Filter Pills
   if (filtersContainer) {

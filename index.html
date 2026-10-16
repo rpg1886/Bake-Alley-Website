@@ -80,52 +80,27 @@
         <p class="inventory-caption">Curated ingredients & tools<br />for your next delicious idea.</p>
       </div>
       <div class="inventory-toolbar">
-        <div class="filters" role="tablist" aria-label="Product categories">
-          <button class="filter active" data-category="All Items">All Items</button>
-          <button class="filter" data-category="Butter">Butter</button>
-          <button class="filter" data-category="Chocolate Bars & Chips">Chocolate Bars & Chips</button>
-          <button class="filter" data-category="Cocoa">Cocoa</button>
-          <button class="filter" data-category="Confectionery Sugar">Confectionery Sugar</button>
-          <button class="filter" data-category="Milk & Dairy">Milk & Dairy</button>
-          <button class="filter" data-category="Flavorings">Flavorings</button>
-          <button class="filter" data-category="Flours">Flours</button>
-          <button class="filter" data-category="Baking Pans">Baking Pans</button>
-          <button class="filter" data-category="Cake Toppers">Cake Toppers</button>
-          <button class="filter" data-category="Decorations & Packaging">Decorations & Packaging</button>
-          <select class="category-dropdown-select" id="more-categories-select" aria-label="More product categories">
-            <option value="" disabled selected>More Categories ▾</option>
-            <option value="Ball Toppers">Ball Toppers</option>
-            <option value="Cake Add-Ons">Cake Add-Ons</option>
-            <option value="Cake Boards">Cake Boards</option>
-            <option value="Cake Boxes">Cake Boxes</option>
-            <option value="Cake Dummies">Cake Dummies</option>
-            <option value="Candles">Candles</option>
-            <option value="Canisters">Canisters</option>
-            <option value="Chocolate Repacked">Chocolate Repacked</option>
-            <option value="Creamcheese & Cheese">Creamcheese & Cheese</option>
-            <option value="Cupcake & Pastry Boxes">Cupcake & Pastry Boxes</option>
-            <option value="Cupcake Liners">Cupcake Liners</option>
-            <option value="Dowels & Straws">Dowels & Straws</option>
-            <option value="Edible Toppers">Edible Toppers</option>
-            <option value="Flowers & Decor">Flowers & Decor</option>
-            <option value="Fondant Molders">Fondant Molders</option>
-            <option value="Food Color">Food Color</option>
-            <option value="Kitchen Tools & Accessories">Kitchen Tools & Accessories</option>
-            <option value="Miscellaneous">Miscellaneous</option>
-            <option value="Nuts">Nuts</option>
-            <option value="Oils">Oils</option>
-            <option value="Papers, Plastics & Liners">Papers, Plastics & Liners</option>
-            <option value="Piping Tips">Piping Tips</option>
-            <option value="Ribbons">Ribbons</option>
-            <option value="Seasonal Items">Seasonal Items</option>
-            <option value="Starches & Powders">Starches & Powders</option>
-            <option value="Sweeteners">Sweeteners</option>
-            <option value="Toppings">Toppings</option>
-            <option value="Tools & Molds">Tools & Molds</option>
-            <option value="Uncategorized">Uncategorized</option>
-          </select>
+        <div class="category-filter-wrapper">
+          <div class="dropdown-category-picker">
+            <label for="category-select" class="category-select-label">Filter by Category:</label>
+            <select id="category-select" class="category-dropdown-select" aria-label="Select inventory category">
+              <option value="All Items">All Categories (1,382 items)</option>
+            </select>
+          </div>
+          <div class="filters" role="tablist" aria-label="Quick product categories">
+            <button class="filter active" data-category="All Items">All Items</button>
+            <button class="filter" data-category="Butter">Butter</button>
+            <button class="filter" data-category="Chocolate Bars & Chips">Chocolate Bars & Chips</button>
+            <button class="filter" data-category="Cocoa">Cocoa</button>
+            <button class="filter" data-category="Confectionery Sugar">Confectionery Sugar</button>
+            <button class="filter" data-category="Milk & Dairy">Milk & Dairy</button>
+            <button class="filter" data-category="Flavorings">Flavorings</button>
+            <button class="filter" data-category="Flours">Flours</button>
+            <button class="filter" data-category="Baking Pans">Baking Pans</button>
+            <button class="filter" data-category="Cake Toppers">Cake Toppers</button>
+          </div>
         </div>
-        <div class="toolbar-bottom"><label class="search"><span>⌕</span><input id="search" type="search"
+        <div class="toolbar-bottom"><label class="search"><span>&#8981;</span><input id="search" type="search"
               placeholder="Search the pantry..." aria-label="Search products" /></label><label
             class="toggle-label"><input id="available-only" type="checkbox" /><span class="toggle"></span> Available
             only</label></div>

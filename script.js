@@ -1,5 +1,5 @@
-// The Bake Alley - Store Inventory, Category Filters, Image Resolver & Pagination Script
-// Generated from Inventory_Main.csv (1382 products, 37 categories)
+// The Bake Alley - Store Inventory, Category Filters & Pagination
+// Grounded in Inventory_Main.csv (1382 products, 37 categories)
 
 const DEFAULT_IMG = 'images/bakeAlley-Logo.jpg';
 const IMG_HOST = 'https://' + 'images.' + 'unsplash' + '.com/photo-';
@@ -17,54 +17,22 @@ function getProductImage(product) {
 
   if (name.includes('butter') || name.includes('oleo') || name.includes('crema') || name.includes('anchor') || cat.includes('butter')) {
     photoId = '1589985270826-4b7bb135bc9d';
-  } else if (name.includes('cheese') || cat.includes('cheese')) {
-    photoId = '1552767059-ce182ead8c1b';
-  } else if (name.includes('milk') || name.includes('cream') || name.includes('whip') || cat.includes('dairy') || name.includes('condensed') || name.includes('evaporated')) {
+  } else if (name.includes('milk') || name.includes('cream') || name.includes('whip') || cat.includes('dairy') || cat.includes('cheese') || name.includes('condensed') || name.includes('evaporated')) {
     photoId = '1628088062854-d1870b4553da';
-  } else if (name.includes('cocoa') || name.includes('bensdorp') || name.includes('jb15')) {
+  } else if (name.includes('cocoa') || name.includes('chocolate') || name.includes('choco') || name.includes('fudge') || name.includes('chips') || name.includes('beryl') || name.includes('bensdorp')) {
     photoId = '1578985545062-69928b1d9587';
-  } else if (name.includes('white') && (name.includes('choco') || name.includes('chip') || name.includes('bar'))) {
-    photoId = '1581798459219-318e76aecc7b';
-  } else if (name.includes('chocolate') || name.includes('choco') || name.includes('fudge') || name.includes('chip') || name.includes('beryl') || name.includes('sevona') || cat.includes('chocolate')) {
-    photoId = '1548907040-4baa42d10919';
-  } else if (name.includes('sugar') || cat.includes('sugar')) {
-    photoId = '1581441363689-1f3c3c414635';
-  } else if (name.includes('flour') || name.includes('bread') || cat.includes('flour')) {
+  } else if (name.includes('sugar') || name.includes('flour') || name.includes('glucose') || name.includes('yeast') || name.includes('powder') || cat.includes('sugar') || cat.includes('flour') || cat.includes('starch')) {
     photoId = '1509440159596-0249088772ff';
-  } else if (name.includes('starch') || name.includes('powder') || name.includes('yeast') || name.includes('gelatine') || cat.includes('starch')) {
-    photoId = '1517433670267-08bbd4be890f';
-  } else if (name.includes('flavor') || name.includes('vanilla') || name.includes('mccormick') || name.includes('syrup') || cat.includes('flavor')) {
+  } else if (name.includes('flavor') || name.includes('vanilla') || name.includes('ube') || name.includes('mccormick') || name.includes('syrup') || name.includes('color') || cat.includes('flavor') || cat.includes('color')) {
     photoId = '1614707267537-2b8a1f7a3c9b';
-  } else if (name.includes('ube') || name.includes('blueberry') || name.includes('cherry') || name.includes('mango') || name.includes('strawberry') || name.includes('fondue')) {
-    photoId = '1563729784474-d77dbb933a9e';
-  } else if (cat.includes('food color') || name.includes('color')) {
-    photoId = '1514517521153-1be72277b32f';
-  } else if (name.includes('sprinkle') || name.includes('vermicelli') || name.includes('luster') || name.includes('glitter') || cat.includes('edible')) {
+  } else if (cat.includes('topper') || cat.includes('candle') || name.includes('sprinkle') || name.includes('vermicelli') || name.includes('flower') || cat.includes('ribbon') || cat.includes('edible')) {
     photoId = '1588195538326-c5b1e5b80f5d';
-  } else if (cat.includes('topper') || name.includes('topper') || cat.includes('add ons')) {
-    photoId = '1535141192574-5d4897c13136';
-  } else if (cat.includes('candle') || name.includes('candle')) {
-    photoId = '1558636508-e0db3814bd1d';
-  } else if (cat.includes('pan') || cat.includes('molder') || name.includes('pan') || name.includes('molder')) {
+  } else if (cat.includes('pan') || cat.includes('molder') || cat.includes('tool') || cat.includes('tip') || cat.includes('piping') || name.includes('spatula') || name.includes('pan')) {
     photoId = '1556910103-1c02745aae4d';
-  } else if (cat.includes('fondant') || cat.includes('mold') || name.includes('silicone') || name.includes('stamp')) {
-    photoId = '1621236378699-8597faf6a176';
-  } else if (cat.includes('piping') || cat.includes('tip') || name.includes('nozzle') || name.includes('tip')) {
-    photoId = '1519869325930-281384150729';
-  } else if (cat.includes('tool') || name.includes('spatula') || name.includes('scraper') || name.includes('whisk')) {
-    photoId = '1590794056226-79ef3a8147e1';
-  } else if (cat.includes('box') || cat.includes('packaging')) {
+  } else if (cat.includes('box') || cat.includes('board') || cat.includes('paper') || cat.includes('liner') || cat.includes('canister') || cat.includes('cup') || cat.includes('straw') || cat.includes('dowel')) {
     photoId = '1532635241-17e820acc59f';
-  } else if (cat.includes('board') || name.includes('drum')) {
-    photoId = '1578985545062-69928b1d9587';
-  } else if (cat.includes('liner') || cat.includes('paper') || cat.includes('plastic')) {
-    photoId = '1576618148400-f54bed99fcfd';
-  } else if (name.includes('almond') || name.includes('walnut') || name.includes('nut') || name.includes('cashew') || cat.includes('nut')) {
+  } else if (name.includes('almond') || name.includes('walnut') || name.includes('nut') || name.includes('cashew') || name.includes('cherry') || cat.includes('nut')) {
     photoId = '1508061252966-177e02927233';
-  } else if (cat.includes('canister') || cat.includes('dowel') || cat.includes('straw') || cat.includes('holder')) {
-    photoId = '1584473457406-6df3a5025d2c';
-  } else if (cat.includes('ribbon') || cat.includes('flower') || cat.includes('seasonal')) {
-    photoId = '1513519245088-0e12902e5a38';
   }
 
   return IMG_HOST + photoId + '?auto=format&fit=crop&w=600&q=80';
@@ -12511,25 +12479,20 @@ const MOCK_PRODUCTS = [
   }
 ];
 
-// Assign images to mock products
-MOCK_PRODUCTS.forEach(item => {
-  item.image = getProductImage(item);
-});
-
 let products = MOCK_PRODUCTS;
 let selectedCategory = 'All Items';
 let currentPage = 1;
-const ITEMS_PER_PAGE = 10; // 10 items per tab/page
+const ITEMS_PER_PAGE = 10;
 
 const grid = document.querySelector('#product-grid');
 const emptyState = document.querySelector('#empty-state');
 const resultCount = document.querySelector('#result-count');
 const searchInput = document.querySelector('#search');
 const availableOnly = document.querySelector('#available-only');
-const filtersContainer = document.querySelector('.filters');
 
+// Format Philippine Pesos with clean Unicode escape (\u20B1)
 function peso(value) {
-  return `â‚±${Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return '\u20B1' + Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function createChatLink(product) {
@@ -12537,102 +12500,102 @@ function createChatLink(product) {
   return `#contact`;
 }
 
-// Setup Category Filters
+// Setup Category Dropdown & Quick Filter Buttons
 function setupCategoryFilters() {
-  const container = document.querySelector('.filters');
-  if (!container) return;
+  const selectElem = document.querySelector('#category-select');
+  const filtersContainer = document.querySelector('.filters');
 
-  const FEATURED_CATEGORIES = [
-    'All Items',
-    'Butter',
-    'Chocolate Bars & Chips',
-    'Cocoa',
-    'Confectionery Sugar',
-    'Milk & Dairy',
-    'Flavorings',
-    'Flours',
-    'Baking Pans',
-    'Cake Toppers',
-    'Decorations & Packaging'
-  ];
-
-  const allCategories = [...new Set(products.map(p => p.category))].filter(Boolean).sort((a, b) => a.localeCompare(b));
-
-  let buttonsHtml = FEATURED_CATEGORIES.map(cat => `
-    <button class="filter ${cat === selectedCategory ? 'active' : ''}" data-category="${cat}">
-      ${cat}
-    </button>
-  `).join('');
-
-  buttonsHtml += `
-    <select class="category-dropdown-select ${!FEATURED_CATEGORIES.includes(selectedCategory) && selectedCategory !== '' ? 'active-select' : ''}" id="more-categories-select" aria-label="More product categories">
-      <option value="" ${FEATURED_CATEGORIES.includes(selectedCategory) ? 'selected' : ''} disabled>More Categories â–¾</option>
-      ${allCategories.map(cat => `
-        <option value="${cat}" ${cat === selectedCategory ? 'selected' : ''}>
-          ${cat}
-        </option>
-      `).join('')}
-    </select>
-  `;
-
-  container.innerHTML = buttonsHtml;
-
-  // Event listeners for pill buttons
-  container.querySelectorAll('.filter').forEach(button => {
-    button.addEventListener('click', () => {
-      selectedCategory = button.dataset.category;
-      currentPage = 1;
-
-      container.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
-      button.classList.add('active');
-
-      const selectElem = container.querySelector('#more-categories-select');
-      if (selectElem) {
-        selectElem.value = "";
-        selectElem.classList.remove('active-select');
-      }
-
-      render();
-    });
+  // Calculate product counts per category
+  const categoryCounts = {};
+  products.forEach(p => {
+    const c = (p.category || 'Uncategorized').trim();
+    categoryCounts[c] = (categoryCounts[c] || 0) + 1;
   });
 
-  // Event listener for dropdown menu
-  const selectElem = container.querySelector('#more-categories-select');
+  const sortedCategories = Object.keys(categoryCounts).sort((a, b) => a.localeCompare(b));
+
+  // Populate Dropdown Select Menu
   if (selectElem) {
-    selectElem.addEventListener('change', (e) => {
-      const val = e.target.value;
-      if (!val) return;
+    let optionsHtml = `<option value="All Items" ${selectedCategory === 'All Items' ? 'selected' : ''}>All Categories (${products.length} items)</option>`;
+    sortedCategories.forEach(cat => {
+      const count = categoryCounts[cat];
+      const isSelected = selectedCategory === cat ? 'selected' : '';
+      optionsHtml += `<option value="${cat}" ${isSelected}>${cat} (${count} items)</option>`;
+    });
+    selectElem.innerHTML = optionsHtml;
 
-      selectedCategory = val;
+    selectElem.onchange = (e) => {
+      selectedCategory = e.target.value;
       currentPage = 1;
-
-      container.querySelectorAll('.filter').forEach(b => {
-        if (b.dataset.category === val) {
-          b.classList.add('active');
-        } else {
-          b.classList.remove('active');
-        }
-      });
-
-      if (!FEATURED_CATEGORIES.includes(val)) {
-        selectElem.classList.add('active-select');
-      } else {
-        selectElem.classList.remove('active-select');
-      }
-
+      updateFilterButtonsUI();
       render();
+    };
+  }
+
+  // Populate Quick Filter Pills
+  if (filtersContainer) {
+    const FEATURED_PILLS = [
+      'All Items',
+      'Butter',
+      'Chocolate Bars & Chips',
+      'Cocoa',
+      'Confectionery Sugar',
+      'Milk & Dairy',
+      'Flavorings',
+      'Flours',
+      'Baking Pans',
+      'Cake Toppers'
+    ];
+
+    let buttonsHtml = FEATURED_PILLS.map(cat => `
+      <button class="filter ${cat === selectedCategory ? 'active' : ''}" data-category="${cat}">
+        ${cat}
+      </button>
+    `).join('');
+
+    filtersContainer.innerHTML = buttonsHtml;
+
+    filtersContainer.querySelectorAll('.filter').forEach(button => {
+      button.onclick = () => {
+        selectedCategory = button.dataset.category;
+        currentPage = 1;
+
+        if (selectElem) {
+          selectElem.value = selectedCategory;
+        }
+        updateFilterButtonsUI();
+        render();
+      };
     });
   }
 }
 
+function updateFilterButtonsUI() {
+  const filtersContainer = document.querySelector('.filters');
+  if (filtersContainer) {
+    filtersContainer.querySelectorAll('.filter').forEach(btn => {
+      if (btn.dataset.category === selectedCategory) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+}
+
+// Render Pagination Tabs
 function renderPagination(totalItems, totalPages) {
   let pagContainer = document.querySelector('#pagination');
   if (!pagContainer) {
     pagContainer = document.createElement('div');
     pagContainer.id = 'pagination';
     pagContainer.className = 'pagination-container';
-    grid.parentNode.insertBefore(pagContainer, grid.nextSibling);
+    if (grid && grid.parentNode) {
+      grid.parentNode.insertBefore(pagContainer, grid.nextSibling);
+    }
   }
+
+  if (!pagContainer) return;
 
   if (totalPages <= 1) {
     pagContainer.innerHTML = '';
@@ -12641,7 +12604,8 @@ function renderPagination(totalItems, totalPages) {
 
   let tabsHtml = `<div class="pagination-tabs" role="navigation" aria-label="Catalog pages">`;
 
-  tabsHtml += `<button class="page-tab prev-next ${currentPage === 1 ? 'disabled' : ''}" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>â† Prev</button>`;
+  // Prev Button
+  tabsHtml += `<button class="page-tab prev-next ${currentPage === 1 ? 'disabled' : ''}" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>\u2190 Prev</button>`;
 
   const maxVisibleTabs = 7;
   let startPage = Math.max(1, currentPage - Math.floor(maxVisibleTabs / 2));
@@ -12652,7 +12616,7 @@ function renderPagination(totalItems, totalPages) {
 
   if (startPage > 1) {
     tabsHtml += `<button class="page-tab" data-page="1">1</button>`;
-    if (startPage > 2) tabsHtml += `<span class="page-ellipsis">â€¦</span>`;
+    if (startPage > 2) tabsHtml += `<span class="page-ellipsis">\u2026</span>`;
   }
 
   for (let i = startPage; i <= endPage; i++) {
@@ -12660,17 +12624,18 @@ function renderPagination(totalItems, totalPages) {
   }
 
   if (endPage < totalPages) {
-    if (endPage < totalPages - 1) tabsHtml += `<span class="page-ellipsis">â€¦</span>`;
+    if (endPage < totalPages - 1) tabsHtml += `<span class="page-ellipsis">\u2026</span>`;
     tabsHtml += `<button class="page-tab" data-page="${totalPages}">${totalPages}</button>`;
   }
 
-  tabsHtml += `<button class="page-tab prev-next ${currentPage === totalPages ? 'disabled' : ''}" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>Next â†’</button>`;
+  // Next Button
+  tabsHtml += `<button class="page-tab prev-next ${currentPage === totalPages ? 'disabled' : ''}" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>Next \u2192</button>`;
   tabsHtml += `</div>`;
 
   pagContainer.innerHTML = tabsHtml;
 
   pagContainer.querySelectorAll('.page-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.onclick = () => {
       const targetPage = Number(btn.dataset.page);
       if (targetPage >= 1 && targetPage <= totalPages && targetPage !== currentPage) {
         currentPage = targetPage;
@@ -12679,7 +12644,7 @@ function renderPagination(totalItems, totalPages) {
         const section = document.querySelector('#products');
         if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    });
+    };
   });
 }
 
@@ -12688,8 +12653,8 @@ function render() {
 
   const visible = products.filter(product => {
     const matchesCategory = selectedCategory === 'All Items' ||
-      product.category === selectedCategory ||
-      product.raw_cat === selectedCategory;
+      (product.category || '').toLowerCase() === selectedCategory.toLowerCase() ||
+      (product.raw_cat || '').toLowerCase() === selectedCategory.toLowerCase();
     const matchesSearch = !query || `${product.name} ${product.category} ${product.raw_cat || ''}`.toLowerCase().includes(query);
     const matchesStock = !availableOnly || !availableOnly.checked || product.stock !== 'Out of Stock';
     return matchesCategory && matchesSearch && matchesStock;
@@ -12704,33 +12669,35 @@ function render() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const pageItems = visible.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  grid.innerHTML = pageItems.map(product => {
-    const isOut = product.stock === 'Out of Stock';
-    const isLow = product.stock === 'Running Low';
-    const badgeClass = isLow ? 'low' : isOut ? 'out' : '';
-    const imgUrl = getProductImage(product);
+  if (grid) {
+    grid.innerHTML = pageItems.map(product => {
+      const isOut = product.stock === 'Out of Stock';
+      const isLow = product.stock === 'Running Low';
+      const badgeClass = isLow ? 'low' : isOut ? 'out' : '';
+      const imgUrl = getProductImage(product);
 
-    return `
-      <article class="product-card">
-        <div class="product-image" style="background-image:url('${imgUrl}')">
-          <span class="stock-badge ${badgeClass}">${product.stock}</span>
-        </div>
-        <div class="product-info">
-          <div class="product-category">${product.category}</div>
-          <h3 class="product-name">${product.name}</h3>
-          <div class="product-meta">
-            <span class="product-size">${product.size}</span>
-            <strong class="product-price">${peso(product.price)}</strong>
+      return `
+        <article class="product-card">
+          <div class="product-image" style="background-image:url('${imgUrl}')">
+            <span class="stock-badge ${badgeClass}">${product.stock}</span>
           </div>
-          <a class="reserve-btn ${isOut ? 'disabled' : ''}" 
-             href="${isOut ? '#' : createChatLink(product)}" 
-             ${isOut ? 'onclick="return false;"' : ''}>
-             ${isOut ? 'Out of Stock' : 'ðŸ’¬ Reserve via Chat'}
-          </a>
-        </div>
-      </article>
-    `;
-  }).join('');
+          <div class="product-info">
+            <div class="product-category">${product.category}</div>
+            <h3 class="product-name">${product.name}</h3>
+            <div class="product-meta">
+              <span class="product-size">${product.size}</span>
+              <strong class="product-price">${peso(product.price)}</strong>
+            </div>
+            <a class="reserve-btn ${isOut ? 'disabled' : ''}" 
+               href="${isOut ? '#' : createChatLink(product)}" 
+               ${isOut ? 'onclick="return false;"' : ''}>
+               ${isOut ? 'Out of Stock' : '\u{1F4AC} Reserve via Chat'}
+            </a>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
 
   if (emptyState) emptyState.hidden = totalItems > 0;
 
@@ -12738,7 +12705,7 @@ function render() {
     if (totalItems > 0) {
       const startNum = startIndex + 1;
       const endNum = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
-      resultCount.textContent = `Showing ${startNum}â€“${endNum} of ${totalItems} items in ${selectedCategory} (Tab ${currentPage} of ${totalPages})`;
+      resultCount.textContent = `Showing ${startNum}\u2013${endNum} of ${totalItems} items in ${selectedCategory} (Tab ${currentPage} of ${totalPages})`;
     } else {
       resultCount.textContent = 'No items in view';
     }
@@ -12761,6 +12728,7 @@ if (availableOnly) {
   });
 }
 
+// Live POS Catalog Ingestion (Read-Only)
 async function loadProducts() {
   const apiBaseUrl = window.BAKE_ALLEY_API_URL || '';
   if (!apiBaseUrl) return;

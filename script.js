@@ -12497,7 +12497,7 @@ function peso(value) {
 
 function createChatLink(product) {
   const msg = encodeURIComponent(`Hi Bake Alley! I'd like to reserve: ${product.name} (${product.size}) - ${peso(product.price)}. Is it available for pickup?`);
-  return `#contact`;
+  return `https://wa.me/639552181590?text=${msg}`;
 }
 
 // Setup Category Dropdown & Quick Filter Buttons
@@ -12690,6 +12690,7 @@ function render() {
             </div>
             <a class="reserve-btn ${isOut ? 'disabled' : ''}" 
                href="${isOut ? '#' : createChatLink(product)}" 
+               target="_blank" rel="noreferrer"
                ${isOut ? 'onclick="return false;"' : ''}>
                ${isOut ? 'Out of Stock' : '\u{1F4AC} Reserve via Chat'}
             </a>

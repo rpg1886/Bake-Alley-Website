@@ -1,7 +1,42 @@
-// The Bake Alley - Full Store Inventory & POS Ingestion Script
-// Generated directly from Inventory_Main.csv (1383 products, 37 categories)
+// The Bake Alley - Store Inventory, Category Filters, Image Resolver & Pagination Script
+// Generated from Inventory_Main.csv (1382 products, 37 categories)
 
 const DEFAULT_IMG = 'images/bakeAlley-Logo.jpg';
+const IMG_HOST = 'https://' + 'images.' + 'unsplash' + '.com/photo-';
+
+// Dynamic Image Resolver for Baking Supplies
+function getProductImage(product) {
+  if (product.image && product.image !== DEFAULT_IMG && product.image.startsWith('http')) {
+    return product.image;
+  }
+
+  const name = (product.name || '').toLowerCase();
+  const cat = (product.category || product.raw_cat || '').toLowerCase();
+
+  let photoId = '1509440159596-0249088772ff'; // Default flour / baking
+
+  if (name.includes('butter') || name.includes('oleo') || name.includes('crema') || name.includes('anchor') || cat.includes('butter')) {
+    photoId = '1589985270826-4b7bb135bc9d';
+  } else if (name.includes('milk') || name.includes('cream') || name.includes('whip') || cat.includes('dairy') || cat.includes('cheese') || name.includes('condensed') || name.includes('evaporated')) {
+    photoId = '1628088062854-d1870b4553da';
+  } else if (name.includes('cocoa') || name.includes('chocolate') || name.includes('choco') || name.includes('fudge') || name.includes('chips') || name.includes('beryl') || name.includes('bensdorp')) {
+    photoId = '1578985545062-69928b1d9587';
+  } else if (name.includes('sugar') || name.includes('flour') || name.includes('glucose') || name.includes('yeast') || name.includes('powder') || cat.includes('sugar') || cat.includes('flour') || cat.includes('starch')) {
+    photoId = '1509440159596-0249088772ff';
+  } else if (name.includes('flavor') || name.includes('vanilla') || name.includes('ube') || name.includes('mccormick') || name.includes('syrup') || name.includes('color') || cat.includes('flavor') || cat.includes('color')) {
+    photoId = '1614707267537-2b8a1f7a3c9b';
+  } else if (cat.includes('topper') || cat.includes('candle') || name.includes('sprinkle') || name.includes('vermicelli') || name.includes('flower') || cat.includes('ribbon') || cat.includes('edible')) {
+    photoId = '1588195538326-c5b1e5b80f5d';
+  } else if (cat.includes('pan') || cat.includes('molder') || cat.includes('tool') || cat.includes('tip') || cat.includes('piping') || name.includes('spatula') || name.includes('pan')) {
+    photoId = '1556910103-1c02745aae4d';
+  } else if (cat.includes('box') || cat.includes('board') || cat.includes('paper') || cat.includes('liner') || cat.includes('canister') || cat.includes('cup') || cat.includes('straw') || cat.includes('dowel')) {
+    photoId = '1532635241-17e820acc59f';
+  } else if (name.includes('almond') || name.includes('walnut') || name.includes('nut') || name.includes('cashew') || name.includes('cherry') || cat.includes('nut')) {
+    photoId = '1508061252966-177e02927233';
+  }
+
+  return IMG_HOST + photoId + '?auto=format&fit=crop&w=600&q=80';
+}
 
 const MOCK_PRODUCTS = [
   {
@@ -10,7 +45,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -19,7 +54,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 49.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -28,7 +63,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -37,7 +72,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 53.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -46,7 +81,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 60.76,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -55,7 +90,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 132.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -64,7 +99,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 57.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -73,7 +108,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 71.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -82,7 +117,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -91,7 +126,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BUTTER",
     "size": "1 pc",
     "price": 125.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -100,7 +135,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "450g",
     "price": 63.02,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -109,7 +144,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "1kg",
     "price": 95.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -118,7 +153,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "5pounder",
     "price": 205.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -127,7 +162,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "1KG",
     "price": 87.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -136,7 +171,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "1KG",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -145,7 +180,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "250g",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -154,7 +189,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "500g",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -163,7 +198,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "500g",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -172,7 +207,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "1KG",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -181,7 +216,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "1kg",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -190,7 +225,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "500g",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -199,7 +234,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CONFECTIONERY SUGAR",
     "size": "2kg",
     "price": 182.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -208,7 +243,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 76.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -217,7 +252,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 87.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -226,7 +261,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "250ml",
     "price": 71.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -235,7 +270,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -244,7 +279,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1L",
     "price": 124.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -253,7 +288,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "390g",
     "price": 38.73,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -262,7 +297,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1L",
     "price": 190.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -271,7 +306,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 175.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -280,7 +315,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1L",
     "price": 276.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -289,7 +324,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1kg",
     "price": 240.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -298,7 +333,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "500g",
     "price": 130.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -307,7 +342,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1kg",
     "price": 557.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -316,7 +351,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "200g",
     "price": 115.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -325,7 +360,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -334,7 +369,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 250.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -343,7 +378,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "500g",
     "price": 97.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -352,7 +387,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 248.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -361,7 +396,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 237.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -370,7 +405,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "250g",
     "price": 52.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -379,7 +414,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "250g",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -388,7 +423,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "500g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -397,7 +432,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -406,7 +441,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 220.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -415,7 +450,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "MILK/DAIRY",
     "size": "1 pc",
     "price": 76.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -424,7 +459,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "1kg",
     "price": 840.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -433,7 +468,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "500g",
     "price": 420.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -442,7 +477,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "250g",
     "price": 210.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -451,7 +486,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "500g",
     "price": 312.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -460,7 +495,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "1kg",
     "price": 622.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -469,7 +504,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "250g",
     "price": 157.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -478,7 +513,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "1kg",
     "price": 730.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -487,7 +522,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "500g",
     "price": 390.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -496,7 +531,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "COCOA",
     "size": "250g",
     "price": 195.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -505,7 +540,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "1 pc",
     "price": 30.34,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -514,7 +549,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "50g",
     "price": 16.41,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -523,7 +558,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "250g",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -532,7 +567,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "100g",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -541,7 +576,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "50g",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -550,7 +585,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "50g",
     "price": 58.67,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -559,7 +594,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "1kg",
     "price": 43.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -568,7 +603,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "500g",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -577,7 +612,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "50g",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -586,7 +621,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "1 pc",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -595,7 +630,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "125g",
     "price": 88.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -604,7 +639,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -613,7 +648,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "50g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -622,7 +657,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "250g",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -631,7 +666,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "500g",
     "price": 115.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -640,7 +675,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -649,7 +684,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "50g",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -658,7 +693,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "STARCHES",
     "size": "11g",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -667,7 +702,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 300.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -676,7 +711,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 339.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -685,7 +720,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 185.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -694,7 +729,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 225.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -703,7 +738,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 245.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -712,7 +747,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 223.46,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -721,7 +756,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 182.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -730,7 +765,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "475ml",
     "price": 410.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -739,7 +774,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "120ml",
     "price": 30.9,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -748,7 +783,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "60ml",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -757,7 +792,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -766,7 +801,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -775,7 +810,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -784,7 +819,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -793,7 +828,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 44.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -802,7 +837,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 76.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -811,7 +846,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 51.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -820,7 +855,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -829,7 +864,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 42.94,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -838,7 +873,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 219.62,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -847,7 +882,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -856,7 +891,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -865,7 +900,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 53.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -874,7 +909,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -883,7 +918,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "350ml",
     "price": 30.25,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -892,7 +927,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "250g",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -901,7 +936,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1kg",
     "price": 465.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -910,7 +945,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 46.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -919,7 +954,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "30ml",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -928,7 +963,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1L",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -937,7 +972,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "60ml",
     "price": 84.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -946,7 +981,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "60ml",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -955,7 +990,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -964,7 +999,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "60ml",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -973,7 +1008,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "60ml",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -982,7 +1017,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "60ml",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -991,7 +1026,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "60ml",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1000,7 +1035,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "250g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1009,7 +1044,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1018,7 +1053,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 185.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1027,7 +1062,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 350.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1036,7 +1071,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1045,7 +1080,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1054,7 +1089,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1063,7 +1098,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 259.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1072,7 +1107,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "50g",
     "price": 55.06,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1081,7 +1116,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "500g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1090,7 +1125,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1099,7 +1134,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 1550.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1108,7 +1143,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLAVORINGS",
     "size": "1 pc",
     "price": 1750.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1117,7 +1152,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1126,7 +1161,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1135,7 +1170,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 34.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1144,7 +1179,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1153,7 +1188,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 37.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1162,7 +1197,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 38.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1171,7 +1206,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 37.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1180,7 +1215,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 37.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1189,7 +1224,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 37.86,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1198,7 +1233,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1207,7 +1242,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1216,7 +1251,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 41.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1225,7 +1260,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 47.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1234,7 +1269,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "20ml",
     "price": 74.74,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1243,7 +1278,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "20ml",
     "price": 77.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1252,7 +1287,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "20ml",
     "price": 74.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1261,7 +1296,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "20ml",
     "price": 74.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1270,7 +1305,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "20ml",
     "price": 76.4,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1279,7 +1314,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "20ml",
     "price": 74.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1288,7 +1323,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1297,7 +1332,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1306,7 +1341,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 92.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1315,7 +1350,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1324,7 +1359,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1333,7 +1368,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 81.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1342,7 +1377,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1351,7 +1386,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 88.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1360,7 +1395,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1369,7 +1404,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1378,7 +1413,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1387,7 +1422,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1396,7 +1431,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1405,7 +1440,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1414,7 +1449,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1423,7 +1458,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 85.71,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1432,7 +1467,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 92.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1441,7 +1476,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1450,7 +1485,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1459,7 +1494,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1467,8 +1502,8 @@ const MOCK_PRODUCTS = [
     "category": "Food Color",
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
-    "price": 79.17,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 79.16999817,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1477,7 +1512,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1486,7 +1521,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1495,7 +1530,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 76.85,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1504,7 +1539,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1513,7 +1548,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FOOD COLOR",
     "size": "30ml",
     "price": 33.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1522,7 +1557,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 260.8,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1531,7 +1566,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 281.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1540,7 +1575,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 210.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1549,7 +1584,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 270.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1558,7 +1593,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 330.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1567,7 +1602,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 322.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1576,7 +1611,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 300.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1585,7 +1620,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "200g",
     "price": 76.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1594,7 +1629,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "200g",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1603,7 +1638,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 318.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1612,7 +1647,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 284.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1621,7 +1656,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 303.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1630,7 +1665,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 281.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1638,8 +1673,8 @@ const MOCK_PRODUCTS = [
     "category": "Chocolate Bars & Chips",
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "200g",
-    "price": 75.41,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 75.41000366,
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1648,7 +1683,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 324.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1657,7 +1692,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 281.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1666,7 +1701,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 265.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1675,7 +1710,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "200g",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1684,7 +1719,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "250g",
     "price": 77.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1693,7 +1728,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "250g",
     "price": 74.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1702,7 +1737,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "200g",
     "price": 57.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1711,7 +1746,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 245.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1720,7 +1755,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE BAR/CHIPS",
     "size": "1kg",
     "price": 270.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1729,7 +1764,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "200g",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1738,7 +1773,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "500g",
     "price": 150.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1747,7 +1782,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "500g",
     "price": 145.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1756,7 +1791,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "200g",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1765,7 +1800,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "500g",
     "price": 150.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1774,7 +1809,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "200G",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1783,7 +1818,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "200G",
     "price": 68.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1792,7 +1827,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "200g",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1801,7 +1836,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "500g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1810,7 +1845,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1819,7 +1854,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1828,7 +1863,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "500g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1837,7 +1872,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CHOCOLATE REPACKED",
     "size": "200g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1846,7 +1881,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1 pc",
     "price": 42.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1855,7 +1890,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1kg",
     "price": 210.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1863,8 +1898,8 @@ const MOCK_PRODUCTS = [
     "category": "Toppings",
     "raw_cat": "TOPPINGS",
     "size": "1kg",
-    "price": 114.86,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 114.8600006,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1873,7 +1908,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "280g",
     "price": 155.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1882,7 +1917,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "454g",
     "price": 205.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1891,7 +1926,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "670g",
     "price": 110.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1900,7 +1935,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "340g",
     "price": 71.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1909,7 +1944,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "170g",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1918,7 +1953,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1kg",
     "price": 150.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1927,7 +1962,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1 pc",
     "price": 265.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1936,7 +1971,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1 pc",
     "price": 382.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1945,7 +1980,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1 pc",
     "price": 210.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1954,7 +1989,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "250g",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1963,7 +1998,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1kg",
     "price": 176.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1972,7 +2007,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "200g",
     "price": 49.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1981,7 +2016,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1 pc",
     "price": 265.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -1990,7 +2025,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "340g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -1999,7 +2034,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "500g",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2008,7 +2043,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "680g",
     "price": 106.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2017,7 +2052,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "680g",
     "price": 115.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2026,7 +2061,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "170g",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2035,7 +2070,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "250g",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2044,7 +2079,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "500g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2053,7 +2088,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "125g",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2062,7 +2097,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "250g",
     "price": 165.45,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2071,7 +2106,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2080,7 +2115,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "353g",
     "price": 220.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2089,16 +2124,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "TOPPINGS",
     "size": "185g",
     "price": 616.0,
-    "image": "images/bakeAlley-Logo.jpg",
-    "stock": "Running Low"
-  },
-  {
-    "name": "Unnamed Product",
-    "category": "Oils",
-    "raw_cat": "OILS",
-    "size": "1 pc",
-    "price": 135.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2107,7 +2133,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "OILS",
     "size": "1L",
     "price": 136.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2116,7 +2142,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "OILS",
     "size": "500g",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2125,7 +2151,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "OILS",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2134,7 +2160,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "OILS",
     "size": "250g",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2143,7 +2169,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "OILS",
     "size": "1 pc",
     "price": 145.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2152,7 +2178,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "OILS",
     "size": "1 pc",
     "price": 170.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2161,7 +2187,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "OILS",
     "size": "485ml",
     "price": 68.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2170,16 +2196,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CREAMCHEESE/CHEESE",
     "size": "225g",
     "price": 129.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Prairie Farms 1.36kg",
     "category": "Creamcheese & Cheese",
     "raw_cat": "CREAMCHEESE/CHEESE",
-    "size": "1.36kg",
+    "size": "36kg",
     "price": 688.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2188,7 +2214,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CREAMCHEESE/CHEESE",
     "size": "1kg",
     "price": 505.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2197,7 +2223,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CREAMCHEESE/CHEESE",
     "size": "2kg",
     "price": 925.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2206,7 +2232,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CREAMCHEESE/CHEESE",
     "size": "1 pc",
     "price": 860.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2215,7 +2241,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CREAMCHEESE/CHEESE",
     "size": "1 pc",
     "price": 190.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2224,7 +2250,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2233,7 +2259,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2242,7 +2268,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2251,7 +2277,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 9.19,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2260,7 +2286,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2269,7 +2295,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2278,7 +2304,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2287,7 +2313,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 59.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2296,7 +2322,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2305,7 +2331,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2314,7 +2340,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2323,7 +2349,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2332,7 +2358,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2341,7 +2367,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2350,7 +2376,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2359,7 +2385,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2368,7 +2394,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2377,7 +2403,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2386,7 +2412,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2395,7 +2421,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2404,7 +2430,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2413,7 +2439,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2422,7 +2448,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2431,7 +2457,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2440,7 +2466,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2449,7 +2475,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2458,7 +2484,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2467,7 +2493,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2476,7 +2502,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2485,7 +2511,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 43.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2494,7 +2520,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 43.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2503,7 +2529,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2512,7 +2538,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2521,7 +2547,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2530,7 +2556,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2539,7 +2565,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 43.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2548,7 +2574,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2557,7 +2583,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2566,7 +2592,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2575,7 +2601,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 24.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2584,7 +2610,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 24.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2593,7 +2619,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2602,7 +2628,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2611,7 +2637,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2620,7 +2646,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2629,7 +2655,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2638,7 +2664,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2647,7 +2673,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2656,7 +2682,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2665,7 +2691,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2674,7 +2700,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2683,7 +2709,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2692,7 +2718,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "250g",
     "price": 57.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2701,7 +2727,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "500g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2710,7 +2736,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2719,7 +2745,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2728,7 +2754,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2737,7 +2763,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2746,7 +2772,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2755,7 +2781,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2764,7 +2790,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2773,7 +2799,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2782,7 +2808,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2791,7 +2817,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2800,7 +2826,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2809,7 +2835,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1kg",
     "price": 170.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2818,7 +2844,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2827,7 +2853,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2836,7 +2862,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2845,7 +2871,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2854,7 +2880,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2863,7 +2889,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2872,7 +2898,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2881,7 +2907,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2890,7 +2916,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2899,7 +2925,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2908,7 +2934,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2917,7 +2943,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2926,7 +2952,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2935,7 +2961,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2944,7 +2970,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE EDIBLE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2953,7 +2979,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "1kg",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2962,7 +2988,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "1kg",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -2971,7 +2997,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "25kg",
     "price": 1320.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2980,7 +3006,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "25kg",
     "price": 550.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2989,7 +3015,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "25kg",
     "price": 1320.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -2998,7 +3024,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3007,7 +3033,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "1kg",
     "price": 42.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3016,7 +3042,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOURS",
     "size": "25kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3025,7 +3051,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "200g",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3034,7 +3060,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "500g",
     "price": 115.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3043,7 +3069,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "250g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3052,7 +3078,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "100g",
     "price": 49.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3061,7 +3087,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "500g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3070,7 +3096,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3079,7 +3105,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "1kg",
     "price": 560.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3088,7 +3114,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "500g",
     "price": 270.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3097,7 +3123,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "100g",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3106,7 +3132,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "1kg",
     "price": 520.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3115,7 +3141,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "500g",
     "price": 270.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3124,7 +3150,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "100g",
     "price": 61.67,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3133,7 +3159,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "1kg",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3142,7 +3168,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "250g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3151,7 +3177,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "NUTS",
     "size": "250g",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3160,7 +3186,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SWEETENERS",
     "size": "750g",
     "price": 104.54,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3169,16 +3195,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SWEETENERS",
     "size": "100ml",
     "price": 71.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Fructose 1.250 L",
     "category": "Sweeteners",
     "raw_cat": "SWEETENERS",
-    "size": "1.250 L",
+    "size": "250 L",
     "price": 95.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3187,106 +3213,106 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SWEETENERS",
     "size": "1 pc",
     "price": 98.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Round Pan 4x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "4x3 in",
+    "size": "1 pc",
     "price": 53.85,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Round Pan 5x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "5x3 in",
+    "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Round Pan 6x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "6x3 in",
+    "size": "1 pc",
     "price": 99.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Round Pan 7x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "7x3 in",
+    "size": "1 pc",
     "price": 111.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Round Pan 8x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "8x3 in",
+    "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Round Pan 9x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "9x3 in",
+    "size": "1 pc",
     "price": 105.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Round Pan 10x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "10x3 in",
+    "size": "1 pc",
     "price": 117.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Round Pan 12x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "12x3 in",
+    "size": "1 pc",
     "price": 158.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Loaf Pan 6x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "6x3 in",
+    "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Loaf Pan 7x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "7x3 in",
+    "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Loaf Pan 8x3",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "8x3 in",
+    "size": "1 pc",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3295,7 +3321,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 95.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3304,7 +3330,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3313,7 +3339,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3322,7 +3348,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 22.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3331,7 +3357,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3340,7 +3366,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3348,8 +3374,8 @@ const MOCK_PRODUCTS = [
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
-    "price": 71.67,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 71.66999817,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3358,7 +3384,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3367,7 +3393,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3376,79 +3402,79 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Sq pan 8x8",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "8x8 in",
+    "size": "1 pc",
     "price": 42.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Sq Pan 10x10",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "10x10 in",
+    "size": "1 pc",
     "price": 46.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Rec 7x11 Pan",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "7x11 in",
+    "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Rec 8x12 Pan",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "8x12 in",
+    "size": "1 pc",
     "price": 46.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Rec 9x13 Pan",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "9x13 in",
+    "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Rec 10x14 Pan",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "10x14 in",
+    "size": "1 pc",
     "price": 52.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "11x15 Jelly Roll Pan",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "11x15 in",
+    "size": "1 pc",
     "price": 64.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "12x16 Jelly Roll Pan",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "12x16 in",
+    "size": "1 pc",
     "price": 66.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3457,7 +3483,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3466,7 +3492,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3475,61 +3501,61 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1 pc",
     "price": 0.91,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Sq Pan 6x6",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "6x6 in",
+    "size": "1 pc",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Sq Pan 7x7",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "7x7 in",
+    "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Sq Pan 9x9",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "9x9 in",
+    "size": "1 pc",
     "price": 44.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cookie tray 13x18",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "13x18 in",
+    "size": "1 pc",
     "price": 110.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cookie Tray 9x13",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "9x13 in",
+    "size": "1 pc",
     "price": 85.4,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cookie Tray 12x16",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "12x16 in",
+    "size": "1 pc",
     "price": 105.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3538,16 +3564,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BAKING PANS",
     "size": "1oz",
     "price": 135.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cookie Tray 10x14",
     "category": "Baking Pans",
     "raw_cat": "BAKING PANS",
-    "size": "10x14 in",
+    "size": "1 pc",
     "price": 52.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3556,7 +3582,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3565,7 +3591,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3574,7 +3600,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3583,7 +3609,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3592,7 +3618,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "3pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3601,7 +3627,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3610,7 +3636,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3619,7 +3645,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3628,7 +3654,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3637,7 +3663,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 135.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3646,7 +3672,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 42.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3655,7 +3681,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3664,7 +3690,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3673,7 +3699,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3682,7 +3708,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3691,7 +3717,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3700,7 +3726,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 36.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3709,7 +3735,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3718,7 +3744,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 130.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3727,7 +3753,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3736,7 +3762,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3745,7 +3771,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3754,7 +3780,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 41.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3763,7 +3789,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 51.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3772,7 +3798,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 205.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3781,7 +3807,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3790,7 +3816,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 47.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3799,7 +3825,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 715.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3808,7 +3834,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 78.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3817,7 +3843,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3826,7 +3852,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3835,7 +3861,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3844,7 +3870,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3853,7 +3879,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3862,7 +3888,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 160.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3871,7 +3897,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 800.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3880,7 +3906,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3889,7 +3915,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3898,7 +3924,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3907,7 +3933,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3916,7 +3942,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3925,7 +3951,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3934,7 +3960,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "2500ml",
     "price": 106.25,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3943,7 +3969,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "2000ml",
     "price": 97.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3952,7 +3978,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1200ml",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3961,7 +3987,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "700ml",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3970,7 +3996,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 69.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3979,7 +4005,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "KITCHEN TOOL/ACCESORIES",
     "size": "1 pc",
     "price": 79.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -3988,7 +4014,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -3997,7 +4023,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4006,7 +4032,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4015,7 +4041,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4024,7 +4050,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4033,7 +4059,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4042,7 +4068,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4051,7 +4077,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4060,7 +4086,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4069,7 +4095,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4078,7 +4104,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4087,7 +4113,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4096,7 +4122,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 26.12,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4105,7 +4131,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4114,7 +4140,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 2.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4123,7 +4149,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4132,7 +4158,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4141,7 +4167,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4150,7 +4176,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4159,7 +4185,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4168,7 +4194,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4177,7 +4203,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4186,7 +4212,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4195,97 +4221,97 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "0 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "0 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "1 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "1 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "2 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "2 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "3 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "3 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "4 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "4 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "5 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "5 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "6 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "6 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "7 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "7 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "8 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "8 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "9 Gold topper",
     "category": "Cake Toppers",
     "raw_cat": "CAKE TOPPERS",
-    "size": "1 pc",
+    "size": "9 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4294,7 +4320,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4303,7 +4329,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4312,7 +4338,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4321,7 +4347,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4330,7 +4356,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4339,7 +4365,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4348,7 +4374,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4357,7 +4383,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4366,7 +4392,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 26.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4375,7 +4401,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 19.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4384,7 +4410,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4393,7 +4419,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4402,7 +4428,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4411,7 +4437,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4420,7 +4446,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4429,7 +4455,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4438,7 +4464,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4447,7 +4473,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4456,7 +4482,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4465,7 +4491,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4474,7 +4500,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4483,7 +4509,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4492,7 +4518,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4501,7 +4527,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4510,7 +4536,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4519,7 +4545,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4528,7 +4554,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4537,7 +4563,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4546,7 +4572,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4555,7 +4581,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4564,7 +4590,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4573,7 +4599,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4582,7 +4608,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4591,7 +4617,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4600,7 +4626,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4609,7 +4635,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4618,7 +4644,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4627,7 +4653,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4636,7 +4662,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4645,7 +4671,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4654,7 +4680,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4663,7 +4689,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4672,7 +4698,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4681,7 +4707,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4690,7 +4716,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4699,7 +4725,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4708,7 +4734,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4717,7 +4743,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4726,7 +4752,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4735,7 +4761,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4744,7 +4770,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4753,7 +4779,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4762,7 +4788,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4771,7 +4797,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4780,7 +4806,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4789,7 +4815,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4798,7 +4824,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4807,7 +4833,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4816,7 +4842,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 26.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4825,7 +4851,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 31.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4834,7 +4860,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4843,7 +4869,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4851,8 +4877,8 @@ const MOCK_PRODUCTS = [
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "50pcs",
-    "price": 20.43,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 20.43000031,
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4861,7 +4887,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 36.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4870,7 +4896,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 29.81,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4879,7 +4905,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 47.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4888,7 +4914,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 160.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4897,7 +4923,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4906,7 +4932,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4915,7 +4941,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4924,7 +4950,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 26.67,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4933,7 +4959,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 46.36,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4942,7 +4968,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 165.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4951,7 +4977,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 166.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -4960,7 +4986,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4969,7 +4995,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 2.08,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4978,7 +5004,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 1.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4987,7 +5013,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 1.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -4996,7 +5022,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "100pcs",
     "price": 68.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5005,7 +5031,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "100pcs",
     "price": 68.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5014,7 +5040,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "100pcs",
     "price": 81.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5023,7 +5049,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 2.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5031,8 +5057,8 @@ const MOCK_PRODUCTS = [
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
-    "price": 1.7,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 1.700000048,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5041,7 +5067,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 1.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5050,7 +5076,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5059,7 +5085,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5068,7 +5094,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5077,7 +5103,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5086,7 +5112,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 91.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5095,43 +5121,43 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 111.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Bento liner 8x8",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "8x8 in",
+    "size": "1 pc",
     "price": 2.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Cake Bag 10x7",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "10x7 in",
-    "price": 3.3,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "1 pc",
+    "price": 3.299999952,
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Cake bag 11x11",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "11x11 in",
+    "size": "1 pc",
     "price": 4.6,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Cake bag 13x12",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "13x12 in",
-    "price": 5.85,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "1 pc",
+    "price": 5.849999905,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5140,16 +5166,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cookie Clear 10x10",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "10x10 in",
+    "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5158,7 +5184,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5167,25 +5193,25 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cake Bag 9x6",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "9x6 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Cake Bag 12x6",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "12x6 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5194,7 +5220,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5203,34 +5229,34 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "20pcs",
     "price": 12.32,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Bento Liner 12x12",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "12x12 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cake Bag 8x5",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "8x5 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Cake Bag 11x6",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "11x6 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5239,25 +5265,25 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cake Bag 12x11",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "12x11 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Cake Bag 14x12",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "14x12 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5266,16 +5292,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "100pcs",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "10x14 Parchment",
     "category": "Papers, Plastics & Liners",
     "raw_cat": "PAPERS/PLASTIC/LINERS",
-    "size": "10x14 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5284,7 +5310,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5293,7 +5319,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PAPERS/PLASTIC/LINERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5302,7 +5328,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5311,7 +5337,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5320,7 +5346,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5329,7 +5355,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 1.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5338,7 +5364,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5347,7 +5373,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 1.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5356,7 +5382,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5365,7 +5391,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5374,7 +5400,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5383,7 +5409,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5392,7 +5418,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5401,7 +5427,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5410,7 +5436,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5419,7 +5445,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5428,7 +5454,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5437,7 +5463,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5446,7 +5472,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5455,7 +5481,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5464,7 +5490,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5473,7 +5499,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5482,7 +5508,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 1.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5491,7 +5517,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 1.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5500,7 +5526,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5509,7 +5535,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5518,7 +5544,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5527,7 +5553,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5536,7 +5562,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5545,7 +5571,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 130.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5554,7 +5580,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5563,7 +5589,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5572,7 +5598,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5581,7 +5607,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5590,7 +5616,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5599,7 +5625,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5608,7 +5634,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5617,7 +5643,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5626,7 +5652,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5635,7 +5661,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5644,7 +5670,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5653,7 +5679,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5662,7 +5688,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5671,7 +5697,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5680,7 +5706,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5689,7 +5715,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5698,7 +5724,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5707,7 +5733,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5716,7 +5742,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 5.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5725,7 +5751,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5734,7 +5760,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5743,7 +5769,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5752,7 +5778,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 185.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5761,7 +5787,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5770,7 +5796,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5779,7 +5805,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5788,7 +5814,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5797,7 +5823,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5806,16 +5832,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Blossoms Plunger set",
     "category": "Uncategorized",
-    "raw_cat": "UNCATEGORIZED",
+    "raw_cat": "",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5824,7 +5850,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5833,7 +5859,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5842,7 +5868,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5851,7 +5877,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5860,7 +5886,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 66.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5869,7 +5895,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5878,7 +5904,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5887,7 +5913,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5896,7 +5922,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 2.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5905,7 +5931,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5914,7 +5940,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5923,7 +5949,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 37.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5932,7 +5958,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5941,7 +5967,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5950,7 +5976,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5959,7 +5985,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -5968,7 +5994,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -5977,79 +6003,79 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FONDANT MOLDERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "5x6.75x1.5 kraft",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "5x6 in",
-    "price": 6.05,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "1 pc",
+    "price": 6.050000191,
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "5x5x2 Printed",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "5x5x2 in",
+    "size": "1 pc",
     "price": 7.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "5x8x2 Printed",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "5x8x2 in",
+    "size": "1 pc",
     "price": 8.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "7x3 loaf box white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "7x3 in",
+    "size": "3 l",
     "price": 8.89,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "8x3 loaf box white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "8x3 in",
+    "size": "3 l",
     "price": 7.94,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "6x9x1.5",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x9x1 in",
+    "size": "1 pc",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "6x6x3 white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x6x3 in",
+    "size": "1 pc",
     "price": 8.74,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "8x8x3 white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "8x8x3 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6058,7 +6084,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6067,7 +6093,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6076,7 +6102,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6085,7 +6111,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 8.18,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6094,7 +6120,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6103,7 +6129,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 5.96,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6112,7 +6138,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6121,16 +6147,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "7x7x3 White",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "7x7x3 in",
+    "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6139,7 +6165,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6148,7 +6174,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6157,25 +6183,25 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "6x6x3 Blue",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x6x3 in",
+    "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "6x6x3 pink",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x6x3 in",
+    "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6184,16 +6210,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "9x12x3 white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "9x12x3 in",
+    "size": "1 pc",
     "price": 14.73,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6202,43 +6228,43 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "6x9x3 Pink RM",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x9x3 in",
+    "size": "1 pc",
     "price": 19.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "6x9x3 Powder Blue RM",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x9x3 in",
+    "size": "1 pc",
     "price": 19.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "6x9x3 white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x9x3 in",
+    "size": "1 pc",
     "price": 11.28,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "6x9x2 white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "6x9x2 in",
+    "size": "1 pc",
     "price": 8.91,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6247,7 +6273,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6256,7 +6282,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6265,7 +6291,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6274,7 +6300,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6283,34 +6309,34 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "10x10x2 box",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "10x10x2 in",
+    "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "5x6x1.5 white",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "5x6x1 in",
+    "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "9x12x3 Gold",
     "category": "Cupcake & Pastry Boxes",
     "raw_cat": "CUPCAKE /PASTRY BOXES",
-    "size": "9x12x3 in",
+    "size": "3 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6319,7 +6345,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6328,7 +6354,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6337,7 +6363,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6346,7 +6372,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6355,7 +6381,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE /PASTRY BOXES",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6364,7 +6390,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6373,7 +6399,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 4.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6382,7 +6408,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 5.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6391,7 +6417,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6400,7 +6426,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6409,7 +6435,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6418,52 +6444,52 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Board Round 10 Gold",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "1 pc",
+    "size": "10 G",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Board 10x14 silver",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "10x14 in",
+    "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Board 12x16 silver",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "12x16 in",
+    "size": "1 pc",
     "price": 17.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Board 14x14",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "14x14 in",
-    "price": 26.51,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "1 pc",
+    "price": 26.51000023,
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Board 16x16",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "16x16 in",
+    "size": "1 pc",
     "price": 28.26,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6472,7 +6498,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 32.65,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6481,7 +6507,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 39.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6489,8 +6515,8 @@ const MOCK_PRODUCTS = [
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
-    "price": 0.31,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 0.310000002,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6499,7 +6525,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6508,7 +6534,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 11.24,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6517,7 +6543,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6526,7 +6552,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6535,7 +6561,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6544,7 +6570,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 55.8,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6553,34 +6579,34 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Board 12x16 Gold",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "12x16 in",
+    "size": "16 G",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "CD \"12 Gold",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "1 pc",
+    "size": "12 G",
     "price": 37.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "CD \"10 Gold",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "1 pc",
+    "size": "10 G",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6589,25 +6615,25 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 5.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Board \"10x14 white",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "10x14 in",
+    "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Board \"6 gold",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "1 pc",
+    "size": "6 g",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6615,8 +6641,8 @@ const MOCK_PRODUCTS = [
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
-    "price": 8.45,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 8.449999809,
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6625,7 +6651,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6634,7 +6660,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6643,16 +6669,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 73.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Board \"10x14 Gold",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "10x14 in",
+    "size": "14 G",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6661,7 +6687,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 51.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6670,25 +6696,25 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 44.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "CD\" 10x10 White",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "10x10 in",
+    "size": "1 pc",
     "price": 34.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "CD \"12x12 White",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "12x12 in",
+    "size": "1 pc",
     "price": 37.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6697,61 +6723,61 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE BOARDS",
     "size": "1 pc",
     "price": 34.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Board 12x16 White",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "12x16 in",
+    "size": "1 pc",
     "price": 17.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "CD \"14x14 silver",
     "category": "Cake Boards",
     "raw_cat": "CAKE BOARDS",
-    "size": "14x14 in",
+    "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Tin Can 6x2",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "6x2 in",
+    "size": "1 pc",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Tin Can 6x3",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "6x3 in",
+    "size": "1 pc",
     "price": 49.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "8x4 Loaf Tray",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "8x4 in",
+    "size": "4 L",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "7x4 Loaf Tray",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "7x4 in",
-    "price": 30.15,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "4 L",
+    "price": 30.14999962,
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6760,7 +6786,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 57.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6769,16 +6795,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "8x8x2 Tray",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "8x8x2 in",
-    "price": 71.82,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "1 pc",
+    "price": 71.81999969,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6787,7 +6813,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 5.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6796,7 +6822,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6805,7 +6831,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 11.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6814,16 +6840,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "H1L",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "1 pc",
+    "size": "1L",
     "price": 5.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6832,7 +6858,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6841,7 +6867,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -6850,7 +6876,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6859,7 +6885,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6868,7 +6894,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 8.48,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6877,7 +6903,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6886,7 +6912,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 12.97,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6894,8 +6920,8 @@ const MOCK_PRODUCTS = [
     "category": "Canisters",
     "raw_cat": "CANISTER",
     "size": "1 pc",
-    "price": 8.2,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 8.199999809,
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6904,7 +6930,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 4.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6913,7 +6939,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6922,7 +6948,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "500ml",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6931,7 +6957,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "750ml",
     "price": 46.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -6939,62 +6965,62 @@ const MOCK_PRODUCTS = [
     "category": "Canisters",
     "raw_cat": "CANISTER",
     "size": "1000ml",
-    "price": 49.14,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 49.13999939,
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Acetate 8x8x9.5",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "8x8x9 in",
+    "size": "1 pc",
     "price": 98.6,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Acetate 10x10x7",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "10x10x7 in",
+    "size": "1 pc",
     "price": 80.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Acetate 10x10x10",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "10x10x10 in",
+    "size": "1 pc",
     "price": 95.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Acetate 10x10x12",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "10x10x12 in",
+    "size": "1 pc",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Acetate 12x12x7",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "12x12x7 in",
+    "size": "1 pc",
     "price": 105.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Acetate 12x12x10",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "12x12x10 in",
+    "size": "1 pc",
     "price": 130.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7003,34 +7029,34 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 21.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "5x4x2 Tray",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "5x4x2 in",
+    "size": "1 pc",
     "price": 31.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "8.6x6x2 Tray",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "6x6x2 in",
+    "size": "1 pc",
     "price": 72.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Acetate 6x6x7 box",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "6x6x7 in",
+    "size": "1 pc",
     "price": 39.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7039,25 +7065,25 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Acetate 7.5x5x7",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "5x5x7 in",
+    "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Acetate 8x8x6",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "8x8x6 in",
+    "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7066,16 +7092,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 4.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Acetate 8x8x12",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "8x8x12 in",
-    "price": 109.29,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "1 pc",
+    "price": 109.2900009,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7084,7 +7110,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7093,7 +7119,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 4.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7102,7 +7128,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 4.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7111,25 +7137,25 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Acetate 6x6x6",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "6x6x6 in",
+    "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Acetate 6x4",
     "category": "Canisters",
     "raw_cat": "CANISTER",
-    "size": "6x4 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7137,8 +7163,8 @@ const MOCK_PRODUCTS = [
     "category": "Canisters",
     "raw_cat": "CANISTER",
     "size": "1 pc",
-    "price": 4.56,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 4.559999943,
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7147,7 +7173,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 4.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7156,7 +7182,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 5.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7165,7 +7191,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANISTER",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7174,7 +7200,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 2.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7183,7 +7209,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 3.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7192,7 +7218,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 4.05,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7201,16 +7227,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 3.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Extender \"15 pack",
     "category": "Dowels & Straws",
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
-    "size": "15 pack",
+    "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7219,16 +7245,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 2.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Extender \"20 pack",
     "category": "Dowels & Straws",
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
-    "size": "20 pack",
+    "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7237,7 +7263,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7246,7 +7272,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7255,7 +7281,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7264,7 +7290,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7273,7 +7299,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7282,7 +7308,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7291,7 +7317,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7300,7 +7326,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7309,7 +7335,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7318,7 +7344,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7327,7 +7353,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7336,7 +7362,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7345,16 +7371,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 2.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Extender \"10 pack",
     "category": "Dowels & Straws",
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
-    "size": "10 pack",
+    "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7363,7 +7389,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 9.6,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7372,7 +7398,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7381,7 +7407,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7390,7 +7416,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "5pcs",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7399,7 +7425,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "5pcs",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7408,7 +7434,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "5pcs",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7417,7 +7443,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "5pcs",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7426,7 +7452,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "5pcs",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7435,7 +7461,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7444,7 +7470,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "HOLDERS/STRAWS/EXTENDER/DOWEL",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7453,7 +7479,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7462,7 +7488,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7471,7 +7497,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 21.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7480,7 +7506,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7489,7 +7515,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7498,7 +7524,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7507,7 +7533,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7516,7 +7542,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7525,7 +7551,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7534,7 +7560,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7543,7 +7569,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7552,7 +7578,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7561,187 +7587,187 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#0 Gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "0 G",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#1 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "1 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#2 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "2 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#3 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "3 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#4 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "4 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#5 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "5 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#6 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "6 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "#7 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "7 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#8 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "8 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#9 gold big",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "9 g",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#0 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "0 g",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#1 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "1 g",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#2 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "2 g",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#3 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "3 g",
     "price": 7.41,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#4 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "4 g",
     "price": 7.75,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#5 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "5 g",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#6 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "6 g",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#7 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
-    "price": 8.67,
-    "image": "images/bakeAlley-Logo.jpg",
+    "size": "7 g",
+    "price": 8.670000076,
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#8 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "8 g",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "#9 gold small",
     "category": "Candles",
     "raw_cat": "CANDLES",
-    "size": "1 pc",
+    "size": "9 g",
     "price": 7.75,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7750,7 +7776,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7759,7 +7785,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7768,7 +7794,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7777,7 +7803,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7786,7 +7812,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7795,7 +7821,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7804,7 +7830,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7813,7 +7839,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7822,7 +7848,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7831,7 +7857,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7840,7 +7866,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7849,7 +7875,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7858,7 +7884,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7867,7 +7893,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7876,7 +7902,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7885,7 +7911,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7894,7 +7920,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7903,7 +7929,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7912,7 +7938,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7921,7 +7947,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7930,7 +7956,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7939,7 +7965,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7948,7 +7974,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7957,7 +7983,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7966,7 +7992,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7975,7 +8001,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -7984,7 +8010,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -7993,7 +8019,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8002,7 +8028,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8011,7 +8037,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8020,7 +8046,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8029,7 +8055,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 19.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8038,7 +8064,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8047,7 +8073,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8056,7 +8082,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8065,7 +8091,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8074,7 +8100,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8083,7 +8109,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8092,7 +8118,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8101,7 +8127,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8110,7 +8136,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8119,7 +8145,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8128,7 +8154,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8137,7 +8163,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8146,7 +8172,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8155,7 +8181,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8164,7 +8190,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8173,7 +8199,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8182,7 +8208,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8191,7 +8217,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8200,7 +8226,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8209,7 +8235,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8218,7 +8244,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8227,7 +8253,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8236,7 +8262,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8245,7 +8271,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8254,7 +8280,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8263,7 +8289,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8272,7 +8298,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8281,52 +8307,52 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CANDLES",
     "size": "1 pc",
     "price": 7.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "9x12 Xmas Box",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "9x12 in",
+    "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "6x6x3 Xmas box",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "6x6x3 in",
+    "size": "1 pc",
     "price": 14.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "8x8x3 Xmas box",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "8x8x3 in",
+    "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "8x8x4 Xmas box",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "8x8x4 in",
+    "size": "1 pc",
     "price": 21.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "7x9x3 Xmas box",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "7x9x3 in",
+    "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8335,34 +8361,34 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "7x3 Loaf Xmas",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "7x3 in",
+    "size": "3 L",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "6x3 xmas loaf",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "6x3 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "8x3 xmas loaf",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "8x3 in",
+    "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8371,7 +8397,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "75 oz",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8380,7 +8406,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8389,7 +8415,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8398,7 +8424,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8407,7 +8433,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8416,7 +8442,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8425,7 +8451,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8434,7 +8460,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "5pcs",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8443,7 +8469,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "5pcs",
     "price": 105.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8452,7 +8478,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8461,7 +8487,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8470,7 +8496,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8479,16 +8505,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Xmas 6x9x3 O",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "6x9x3 in",
+    "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8497,7 +8523,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8506,7 +8532,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8515,7 +8541,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8524,7 +8550,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8533,34 +8559,34 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "5pcs",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Xmas 6x9x3 N",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "6x9x3 in",
+    "size": "1 pc",
     "price": 19.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Xmas 5x6x1.5",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "5x6x1 in",
+    "size": "1 pc",
     "price": 9.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Xmas 6x9x1.5",
     "category": "Seasonal Items",
     "raw_cat": "SEASONAL ITEMS",
-    "size": "6x9x1 in",
+    "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8569,7 +8595,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 38.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8578,7 +8604,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8587,7 +8613,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8596,7 +8622,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8605,7 +8631,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8614,7 +8640,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -8623,367 +8649,367 @@ const MOCK_PRODUCTS = [
     "raw_cat": "SEASONAL ITEMS",
     "size": "1 pc",
     "price": 5.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Dummy 4x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "4x3 in",
+    "size": "1 pc",
     "price": 11.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 6x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "6x3 in",
+    "size": "1 pc",
     "price": 24.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 6x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "6x4 in",
+    "size": "1 pc",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 6x6",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "6x6 in",
+    "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 8x2",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "8x2 in",
+    "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 8x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "8x4 in",
+    "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 8x6",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "8x6 in",
+    "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 10x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "10x4 in",
+    "size": "1 pc",
     "price": 62.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 10x6",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "10x6 in",
+    "size": "1 pc",
     "price": 135.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 12x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "12x4 in",
+    "size": "1 pc",
     "price": 120.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 4x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "4x4 in",
+    "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 5x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "5x3 in",
+    "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 8x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "8x3 in",
+    "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 5x2",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "5x2 in",
+    "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 5x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "5x4 in",
+    "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 6x2",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "6x2 in",
+    "size": "1 pc",
     "price": 17.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 10x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "10x3 in",
+    "size": "1 pc",
     "price": 65.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 12x6",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "12x6 in",
+    "size": "1 pc",
     "price": 195.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 9x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "9x4 in",
+    "size": "1 pc",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 9x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "9x3 in",
+    "size": "1 pc",
     "price": 54.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 7x4",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "7x4 in",
+    "size": "1 pc",
     "price": 41.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 7x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "7x3 in",
+    "size": "1 pc",
     "price": 34.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 4x2",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "4x2 in",
+    "size": "1 pc",
     "price": 8.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "dummy 12x3",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "12x3 in",
+    "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Dummy 12x2",
     "category": "Cake Dummies",
     "raw_cat": "DUMMY",
-    "size": "12x2 in",
+    "size": "1 pc",
     "price": 67.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Box 8x8x4 white",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "8x8x4 in",
+    "size": "1 pc",
     "price": 14.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 12x12x5 white",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "12x12x5 in",
+    "size": "1 pc",
     "price": 21.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 12x16x5 White",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "12x16x5 in",
+    "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Box 14x14x4.5 WHITE",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "14x14x4 in",
+    "size": "1 pc",
     "price": 24.98,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 16x16x4.5",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "16x16x4 in",
+    "size": "1 pc",
     "price": 42.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Box 5x5x3",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "5x5x3 in",
+    "size": "1 pc",
     "price": 16.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Box 10x14x5 white",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "10x14x5 in",
+    "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 7x7x4 White",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "7x7x4 in",
+    "size": "1 pc",
     "price": 12.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 11x11x5 white",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "11x11x5 in",
+    "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Box 7x7x4 Red",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "7x7x4 in",
+    "size": "1 pc",
     "price": 13.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Box 10x10x5 White",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "10x10x5 in",
+    "size": "1 pc",
     "price": 17.78,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 10x10x5 Silver",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "10x10x5 in",
+    "size": "1 pc",
     "price": 18.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
     "name": "Box 10x10x5 Red",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "10x10x5 in",
+    "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 9x9x5 white",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "9x9x5 in",
+    "size": "1 pc",
     "price": 15.43,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Box 12x16x5 Gold",
     "category": "Cake Boxes",
     "raw_cat": "CAKE BOXES",
-    "size": "12x16x5 in",
+    "size": "5 G",
     "price": 24.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -8992,7 +9018,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "3oz",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9000,8 +9026,8 @@ const MOCK_PRODUCTS = [
     "category": "Cupcake Liners",
     "raw_cat": "CUPCAKE LINER",
     "size": "75oz",
-    "price": 13.85,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 13.85000038,
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9010,7 +9036,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "1oz",
     "price": 20.44,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9019,7 +9045,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9028,7 +9054,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9037,7 +9063,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9046,7 +9072,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9055,7 +9081,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9064,7 +9090,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "3oz",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9073,7 +9099,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "3oz",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9082,7 +9108,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "50pcs",
     "price": 68.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9091,7 +9117,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "50pcs",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9100,7 +9126,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "50pcs",
     "price": 97.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9109,7 +9135,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "50pcs",
     "price": 60.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9118,7 +9144,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "4 oz",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9127,7 +9153,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9136,7 +9162,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "3oz",
     "price": 29.51,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9145,7 +9171,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "4oz",
     "price": 17.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9154,7 +9180,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "1oz",
     "price": 17.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9163,7 +9189,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "3oz",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9172,7 +9198,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "3oz",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9181,7 +9207,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "1oz",
     "price": 19.03,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9190,7 +9216,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "2oz",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9199,7 +9225,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "2oz",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9208,7 +9234,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 48.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9217,7 +9243,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "50pcs",
     "price": 59.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9226,7 +9252,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "50pcs",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9235,7 +9261,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "50pcs",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9244,7 +9270,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "2oz",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9253,7 +9279,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "2oz",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9262,7 +9288,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "1oz",
     "price": 0.65,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9271,7 +9297,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9280,7 +9306,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "100pcs",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9289,7 +9315,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "1oz",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9298,7 +9324,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "1oz",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9307,7 +9333,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CUPCAKE LINER",
     "size": "2oz",
     "price": 44.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9316,7 +9342,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9325,7 +9351,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9334,7 +9360,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9343,7 +9369,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9352,7 +9378,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9361,7 +9387,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9370,7 +9396,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9379,7 +9405,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9388,7 +9414,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9397,7 +9423,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9406,7 +9432,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9415,7 +9441,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9424,7 +9450,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9433,7 +9459,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9442,7 +9468,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9451,7 +9477,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9460,7 +9486,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9469,7 +9495,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9478,7 +9504,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9487,7 +9513,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "2 inch",
     "price": 28.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9496,7 +9522,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9505,7 +9531,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9514,7 +9540,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9523,7 +9549,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9532,7 +9558,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9541,7 +9567,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9550,7 +9576,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "RIBBONS",
     "size": "1inch",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9559,7 +9585,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9568,7 +9594,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9577,7 +9603,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 12.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9586,7 +9612,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9595,7 +9621,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9604,7 +9630,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9613,7 +9639,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9622,7 +9648,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9631,7 +9657,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9640,7 +9666,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9649,7 +9675,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9658,7 +9684,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9667,7 +9693,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9676,7 +9702,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "402L",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9685,7 +9711,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9694,7 +9720,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9703,7 +9729,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9712,7 +9738,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 12.5,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9721,7 +9747,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9730,7 +9756,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9739,7 +9765,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9748,7 +9774,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9757,7 +9783,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9766,7 +9792,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 42.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9775,7 +9801,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9784,7 +9810,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9793,7 +9819,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9802,7 +9828,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9811,7 +9837,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9820,7 +9846,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9829,7 +9855,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9838,7 +9864,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9847,7 +9873,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9856,7 +9882,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9865,7 +9891,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9874,7 +9900,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9883,7 +9909,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9892,7 +9918,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9901,7 +9927,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9910,7 +9936,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -9919,7 +9945,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9928,7 +9954,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9937,7 +9963,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9946,7 +9972,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9955,7 +9981,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9964,7 +9990,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9973,7 +9999,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9982,7 +10008,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -9991,7 +10017,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10000,7 +10026,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10009,7 +10035,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10018,7 +10044,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10027,7 +10053,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10036,7 +10062,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10045,7 +10071,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10054,7 +10080,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10063,7 +10089,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10072,7 +10098,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10081,7 +10107,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10090,7 +10116,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10099,7 +10125,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10108,7 +10134,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10117,7 +10143,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10126,7 +10152,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10135,7 +10161,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10144,7 +10170,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1G",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10153,7 +10179,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10162,7 +10188,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10171,7 +10197,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10180,7 +10206,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10189,7 +10215,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10198,7 +10224,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10207,7 +10233,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "PIPING TIP",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10216,7 +10242,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 16.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10225,7 +10251,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10234,7 +10260,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10243,7 +10269,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10252,7 +10278,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 70.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10261,7 +10287,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10270,7 +10296,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10279,7 +10305,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 75.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10288,16 +10314,16 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "Dalia x2 large",
     "category": "Flowers & Decor",
     "raw_cat": "FLOWERS",
-    "size": "1 pc",
+    "size": "2 l",
     "price": 78.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10306,7 +10332,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10315,7 +10341,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10324,7 +10350,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10333,7 +10359,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 22.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10342,7 +10368,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10351,7 +10377,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "FLOWERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10360,7 +10386,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10369,7 +10395,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10378,7 +10404,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10387,7 +10413,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10396,7 +10422,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10405,7 +10431,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10414,7 +10440,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10423,7 +10449,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 44.55,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10432,7 +10458,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10441,7 +10467,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 47.27,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10450,7 +10476,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10459,7 +10485,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 47.86,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10468,7 +10494,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10477,7 +10503,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 32.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10486,7 +10512,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10495,7 +10521,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10504,7 +10530,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10513,7 +10539,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 55.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10522,7 +10548,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 12.75,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10531,7 +10557,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10540,7 +10566,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 39.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10549,7 +10575,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 16.71,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10558,7 +10584,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 16.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10567,7 +10593,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10576,7 +10602,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10585,7 +10611,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10594,7 +10620,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10603,7 +10629,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10612,7 +10638,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10621,7 +10647,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10630,7 +10656,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10639,7 +10665,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10648,7 +10674,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10657,7 +10683,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10666,7 +10692,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10675,7 +10701,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10684,7 +10710,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10693,7 +10719,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10702,7 +10728,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10711,7 +10737,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10720,7 +10746,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 23.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10729,7 +10755,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 24.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10738,7 +10764,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10747,7 +10773,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10756,7 +10782,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10765,7 +10791,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 100.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10774,7 +10800,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 85.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10783,7 +10809,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10792,7 +10818,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10801,7 +10827,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 90.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10810,7 +10836,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10819,7 +10845,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10828,7 +10854,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10837,7 +10863,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 24.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10846,7 +10872,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10855,7 +10881,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 58.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10864,7 +10890,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10873,7 +10899,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10882,7 +10908,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10891,7 +10917,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10900,7 +10926,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10909,7 +10935,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10918,7 +10944,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "4pcs",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10927,7 +10953,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "4pcs",
     "price": 27.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10936,7 +10962,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10945,7 +10971,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10954,7 +10980,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10963,7 +10989,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10972,7 +10998,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -10981,7 +11007,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10990,7 +11016,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -10999,7 +11025,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 29.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11008,7 +11034,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11017,7 +11043,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11026,7 +11052,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 52.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11035,7 +11061,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 52.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11044,7 +11070,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 52.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11053,7 +11079,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 52.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11062,7 +11088,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 6.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11071,7 +11097,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11080,7 +11106,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11089,7 +11115,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11098,7 +11124,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 42.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11107,7 +11133,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11116,7 +11142,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11125,7 +11151,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11134,7 +11160,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11143,7 +11169,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11152,7 +11178,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11161,7 +11187,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11170,7 +11196,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11179,7 +11205,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11188,7 +11214,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11197,7 +11223,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11206,7 +11232,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11215,7 +11241,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 45.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11224,7 +11250,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "CAKE ADD ONS",
     "size": "1 pc",
     "price": 100.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11233,7 +11259,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11242,7 +11268,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11251,7 +11277,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11260,7 +11286,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11269,7 +11295,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11278,7 +11304,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11287,7 +11313,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11296,7 +11322,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11305,7 +11331,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11314,7 +11340,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11323,7 +11349,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11332,7 +11358,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11341,7 +11367,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11350,7 +11376,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11359,7 +11385,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11368,7 +11394,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11377,7 +11403,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11386,7 +11412,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11395,7 +11421,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11404,7 +11430,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11413,7 +11439,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11422,7 +11448,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11431,7 +11457,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11440,7 +11466,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11449,7 +11475,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11458,7 +11484,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11467,7 +11493,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11476,7 +11502,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11485,7 +11511,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11494,7 +11520,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11503,7 +11529,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11512,7 +11538,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11520,8 +11546,8 @@ const MOCK_PRODUCTS = [
     "category": "Ball Toppers",
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
-    "price": 11.54,
-    "image": "images/bakeAlley-Logo.jpg",
+    "price": 11.53999996,
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11530,7 +11556,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11539,7 +11565,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11548,7 +11574,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11557,7 +11583,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11566,7 +11592,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11575,7 +11601,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11584,7 +11610,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11593,7 +11619,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11602,7 +11628,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11611,7 +11637,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11620,7 +11646,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11629,7 +11655,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11638,7 +11664,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11647,7 +11673,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11656,7 +11682,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11665,7 +11691,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11674,7 +11700,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11683,7 +11709,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11692,7 +11718,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 8.33,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11701,7 +11727,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11710,7 +11736,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11719,7 +11745,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11728,7 +11754,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11737,7 +11763,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11746,7 +11772,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11755,7 +11781,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11764,7 +11790,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11773,7 +11799,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11782,7 +11808,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 40.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11791,7 +11817,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11800,7 +11826,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11809,7 +11835,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11818,7 +11844,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11827,7 +11853,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11836,7 +11862,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11845,7 +11871,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11854,7 +11880,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11863,7 +11889,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11872,7 +11898,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11881,7 +11907,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11890,7 +11916,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11899,7 +11925,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11908,7 +11934,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11917,7 +11943,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11926,7 +11952,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11935,7 +11961,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 35.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11944,7 +11970,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11953,7 +11979,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 50.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -11962,7 +11988,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11971,7 +11997,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11980,7 +12006,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11989,7 +12015,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -11998,7 +12024,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12007,7 +12033,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12016,7 +12042,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12025,7 +12051,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 25.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12034,7 +12060,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12043,7 +12069,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12052,7 +12078,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12061,7 +12087,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12070,7 +12096,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12079,7 +12105,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12088,7 +12114,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 10.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12097,7 +12123,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12106,7 +12132,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12115,7 +12141,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12124,7 +12150,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12133,7 +12159,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12142,7 +12168,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12151,7 +12177,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12160,7 +12186,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12169,7 +12195,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12178,7 +12204,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12187,7 +12213,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12196,7 +12222,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12205,7 +12231,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12214,7 +12240,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12223,7 +12249,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12232,7 +12258,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12241,7 +12267,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12250,7 +12276,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12259,7 +12285,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12268,7 +12294,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12277,7 +12303,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12286,7 +12312,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12295,7 +12321,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12304,7 +12330,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12313,7 +12339,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12322,7 +12348,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12331,7 +12357,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12340,7 +12366,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 30.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12349,7 +12375,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12358,7 +12384,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12367,7 +12393,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12376,7 +12402,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12385,7 +12411,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
@@ -12394,7 +12420,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 20.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12403,7 +12429,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12412,7 +12438,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12421,7 +12447,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "BALL TOPPERS",
     "size": "1 pc",
     "price": 15.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12430,7 +12456,7 @@ const MOCK_PRODUCTS = [
     "raw_cat": "ETC",
     "size": "1 pc",
     "price": 17.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Running Low"
   },
   {
@@ -12439,31 +12465,39 @@ const MOCK_PRODUCTS = [
     "raw_cat": "ETC",
     "size": "1 pc",
     "price": 7.79,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Available"
   },
   {
     "name": "FONDANT MOLDERS",
     "category": "Uncategorized",
-    "raw_cat": "UNCATEGORIZED",
+    "raw_cat": "",
     "size": "1 pc",
     "price": 0.0,
-    "image": "images/bakeAlley-Logo.jpg",
+    "image": "",
     "stock": "Out of Stock"
   }
 ];
 
+// Assign images to mock products
+MOCK_PRODUCTS.forEach(item => {
+  item.image = getProductImage(item);
+});
+
 let products = MOCK_PRODUCTS;
 let selectedCategory = 'All Items';
+let currentPage = 1;
+const ITEMS_PER_PAGE = 10; // 10 items per tab/page
 
 const grid = document.querySelector('#product-grid');
 const emptyState = document.querySelector('#empty-state');
 const resultCount = document.querySelector('#result-count');
 const searchInput = document.querySelector('#search');
 const availableOnly = document.querySelector('#available-only');
+const filtersContainer = document.querySelector('.filters');
 
 function peso(value) {
-  return `â‚±${Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `₱${Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function createChatLink(product) {
@@ -12471,25 +12505,125 @@ function createChatLink(product) {
   return `#contact`;
 }
 
+// Setup Category Filters
+function setupCategoryFilters() {
+  if (!filtersContainer) return;
+
+  const categories = ['All Items', ...new Set(products.map(p => p.category))].sort((a, b) => {
+    if (a === 'All Items') return -1;
+    if (b === 'All Items') return 1;
+    return a.localeCompare(b);
+  });
+
+  filtersContainer.innerHTML = categories.map(cat => `
+    <button class="filter ${cat === selectedCategory ? 'active' : ''}" data-category="${cat}">
+      ${cat}
+    </button>
+  `).join('');
+
+  filtersContainer.querySelectorAll('.filter').forEach(button => {
+    button.addEventListener('click', () => {
+      selectedCategory = button.dataset.category;
+      currentPage = 1; // Reset to Tab 1 on category change
+
+      const currentActive = filtersContainer.querySelector('.filter.active');
+      if (currentActive) currentActive.classList.remove('active');
+      button.classList.add('active');
+
+      render();
+    });
+  });
+}
+
+// Pagination Renderer
+function renderPagination(totalItems, totalPages) {
+  let pagContainer = document.querySelector('#pagination');
+  if (!pagContainer) {
+    pagContainer = document.createElement('div');
+    pagContainer.id = 'pagination';
+    pagContainer.className = 'pagination-container';
+    grid.parentNode.insertBefore(pagContainer, grid.nextSibling);
+  }
+
+  if (totalPages <= 1) {
+    pagContainer.innerHTML = '';
+    return;
+  }
+
+  let tabsHtml = `<div class="pagination-tabs" role="navigation" aria-label="Catalog pages">`;
+
+  tabsHtml += `<button class="page-tab prev-next ${currentPage === 1 ? 'disabled' : ''}" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>← Prev</button>`;
+
+  const maxVisibleTabs = 7;
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisibleTabs / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisibleTabs - 1);
+  if (endPage - startPage + 1 < maxVisibleTabs) {
+    startPage = Math.max(1, endPage - maxVisibleTabs + 1);
+  }
+
+  if (startPage > 1) {
+    tabsHtml += `<button class="page-tab" data-page="1">1</button>`;
+    if (startPage > 2) tabsHtml += `<span class="page-ellipsis">…</span>`;
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    tabsHtml += `<button class="page-tab ${i === currentPage ? 'active' : ''}" data-page="${i}">Tab ${i}</button>`;
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) tabsHtml += `<span class="page-ellipsis">…</span>`;
+    tabsHtml += `<button class="page-tab" data-page="${totalPages}">${totalPages}</button>`;
+  }
+
+  tabsHtml += `<button class="page-tab prev-next ${currentPage === totalPages ? 'disabled' : ''}" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
+  tabsHtml += `</div>`;
+
+  pagContainer.innerHTML = tabsHtml;
+
+  pagContainer.querySelectorAll('.page-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetPage = Number(btn.dataset.page);
+      if (targetPage >= 1 && targetPage <= totalPages && targetPage !== currentPage) {
+        currentPage = targetPage;
+        render();
+
+        const section = document.querySelector('#products');
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+}
+
 function render() {
-  const query = searchInput.value.trim().toLowerCase();
+  const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
   const visible = products.filter(product => {
     const matchesCategory = selectedCategory === 'All Items' ||
       product.category === selectedCategory ||
       product.raw_cat === selectedCategory;
     const matchesSearch = !query || `${product.name} ${product.category} ${product.raw_cat || ''}`.toLowerCase().includes(query);
-    const matchesStock = !availableOnly.checked || product.stock !== 'Out of Stock';
+    const matchesStock = !availableOnly || !availableOnly.checked || product.stock !== 'Out of Stock';
     return matchesCategory && matchesSearch && matchesStock;
   });
 
-  grid.innerHTML = visible.map(product => {
+  const totalItems = visible.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const pageItems = visible.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  grid.innerHTML = pageItems.map(product => {
     const isOut = product.stock === 'Out of Stock';
     const isLow = product.stock === 'Running Low';
     const badgeClass = isLow ? 'low' : isOut ? 'out' : '';
+    const imgUrl = getProductImage(product);
 
     return `
       <article class="product-card">
-        <div class="product-image" style="background-image:url('${product.image}')">
+        <div class="product-image" style="background-image:url('${imgUrl}')">
           <span class="stock-badge ${badgeClass}">${product.stock}</span>
         </div>
         <div class="product-info">
@@ -12502,33 +12636,42 @@ function render() {
           <a class="reserve-btn ${isOut ? 'disabled' : ''}" 
              href="${isOut ? '#' : createChatLink(product)}" 
              ${isOut ? 'onclick="return false;"' : ''}>
-             ${isOut ? 'Out of Stock' : 'ðŸ’¬ Reserve via Chat'}
+             ${isOut ? 'Out of Stock' : '💬 Reserve via Chat'}
           </a>
         </div>
       </article>
     `;
   }).join('');
 
-  emptyState.hidden = visible.length > 0;
-  resultCount.textContent = visible.length
-    ? `${visible.length} ${visible.length === 1 ? 'item' : 'items'} in view`
-    : 'No items in view';
+  if (emptyState) emptyState.hidden = totalItems > 0;
+
+  if (resultCount) {
+    if (totalItems > 0) {
+      const startNum = startIndex + 1;
+      const endNum = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+      resultCount.textContent = `Showing ${startNum}–${endNum} of ${totalItems} items in ${selectedCategory} (Tab ${currentPage} of ${totalPages})`;
+    } else {
+      resultCount.textContent = 'No items in view';
+    }
+  }
+
+  renderPagination(totalItems, totalPages);
 }
 
-document.querySelectorAll('.filter').forEach(button => {
-  button.addEventListener('click', () => {
-    selectedCategory = button.dataset.category;
-    const currentActive = document.querySelector('.filter.active');
-    if (currentActive) currentActive.classList.remove('active');
-    button.classList.add('active');
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    currentPage = 1;
     render();
   });
-});
+}
 
-if (searchInput) searchInput.addEventListener('input', render);
-if (availableOnly) availableOnly.addEventListener('change', render);
+if (availableOnly) {
+  availableOnly.addEventListener('change', () => {
+    currentPage = 1;
+    render();
+  });
+}
 
-// Live POS Catalog Ingestion (Read-Only)
 async function loadProducts() {
   const apiBaseUrl = window.BAKE_ALLEY_API_URL || '';
   if (!apiBaseUrl) return;
@@ -12545,17 +12688,21 @@ async function loadProducts() {
         raw_cat: item.raw_category || '',
         size: item.unit_size || '1 pc',
         price: Number(item.price),
-        image: item.image_url || DEFAULT_IMG,
+        image: item.image_url || '',
         stock: item.stock_status === 'in_stock' ? 'Available' : item.stock_status === 'low_stock' ? 'Running Low' : 'Out of Stock'
       }));
+
+      setupCategoryFilters();
       render();
     }
   } catch (err) {
     console.warn('POS Catalog API unavailable. Displaying local store inventory.', err);
     products = MOCK_PRODUCTS;
+    setupCategoryFilters();
     render();
   }
 }
 
+setupCategoryFilters();
 render();
 loadProducts();

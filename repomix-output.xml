@@ -1,0 +1,363 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  agents/
+    bake-alley-web-cro.agent.md
+docs/
+  Function-Design.md
+images/
+  bakeAlley-Logo.jpg
+index.html
+README.md
+script.js
+styles.css
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="docs/Function-Design.md">
+# The Bake Alley Function Design
+
+## Purpose
+
+The Bake Alley is a responsive single-page storefront for browsing baking ingredients, decorations, tools, and packaging. The page is designed to help home bakers and small pastry businesses quickly find products and contact the store for larger or custom orders.
+
+## Page Structure
+
+- **Announcement bar:** Communicates the store promise and local pickup availability.
+- **Header:** Uses the Bake Alley logo, brand name, primary navigation, and an inventory call to action.
+- **Hero:** Introduces the store with the primary message, supporting copy, and a link to the inventory.
+- **Story strip:** Communicates the calming, communal role of baking.
+- **Inventory:** Provides category tabs, live search, an available-only toggle, product cards, and stock states.
+- **Testimonials:** Shows social proof from local bakers and pastry businesses.
+- **Order and inquire:** Links customers to Messenger, WhatsApp, and Viber for bulk or custom requests.
+- **Footer:** Displays hours, address, social links, and the closing brand message.
+
+## Inventory Behavior
+
+Product data is represented by objects with these fields:
+
+- `name`: Product display name.
+- `category`: One of the inventory categories.
+- `size`: Unit or package size.
+- `price`: Numeric price rendered in Philippine pesos.
+- `image`: Product image URL.
+- `stock`: `Available`, `Running Low`, or `Out of Stock`.
+
+The client initially renders the built-in mock inventory so the page works in preview mode. If `window.BAKE_ALLEY_SUPABASE_URL` and `window.BAKE_ALLEY_SUPABASE_ANON_KEY` are configured, the Supabase client queries the `products` table and replaces the mock data when rows are returned. A failed or empty query leaves the mock inventory in place.
+
+Filtering is applied in the browser whenever the selected category, search input, or availability toggle changes. Search matches the product name and category. The out-of-stock products are excluded when **Available only** is enabled. The result count and empty state update with every filter operation.
+
+## External Integrations
+
+- `@supabase/supabase-js` is loaded from the browser CDN for optional inventory loading.
+- Product and hero imagery uses remote image URLs with styled backgrounds as visual fallbacks.
+- Contact links point to Messenger, WhatsApp, and Viber.
+
+## Responsive Design
+
+The layout uses CSS grid and mobile breakpoints. Desktop views show a two-column hero and four-column product grid. Narrow layouts collapse the hero, story, contact section, and testimonials into a single column, while the product grid remains a compact two-column catalog for efficient browsing.
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The Bake Alley - cozy baking ingredients and essentials for every great bake." />
+    <title>The Bake Alley | Where Every Great Bake Begins</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>.brand-logo{width:40px;height:40px;object-fit:cover;border-radius:50%;background:#fff;padding:2px;box-shadow:0 3px 10px rgba(86,57,34,.1)}</style>
+  </head>
+  <body>
+    <div class="announcement">Small-batch essentials, thoughtfully chosen for your kitchen <span>✦</span> Same-day local pickup available</div>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="The Bake Alley home"><img class="brand-logo" src="images/bakeAlley-Logo.jpg" alt="" /><span>The Bake <em>Alley</em></span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#products">Shop pantry</a><a href="#story">Our story</a><a href="#contact">Bulk orders</a>
+      </nav>
+      <a class="header-action" href="#products">Browse inventory <span>↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Your neighborhood baking cupboard</p>
+          <h1>Where every<br /><i>great bake</i> begins.</h1>
+          <p class="hero-text">Quality ingredients and cozy baking essentials to turn simple recipes into warm memories and sweet smiles.</p>
+          <a class="button button-dark" href="#products">Explore inventory <span>↓</span></a>
+          <div class="hero-note"><div class="avatar-stack"><span>J</span><span>M</span><span>S</span></div><span><strong>Loved by local bakers</strong><br />from first whisk to final crumb</span></div>
+        </div>
+        <div class="hero-art" aria-label="Freshly baked cinnamon rolls">
+          <div class="sun"></div><div class="scribble">made<br />with care</div>
+          <div class="bake-image"></div>
+          <div class="hero-sticker">Fresh<br /><strong>from the oven</strong></div>
+        </div>
+      </section>
+
+      <section class="story-strip" id="story">
+        <div class="story-intro"><p class="eyebrow">A little room to breathe</p><h2>Sift through the noise.<br /><i>Take a breath.</i></h2></div>
+        <blockquote>“Baking is our favorite kind of quiet. A few good ingredients, a warm oven, and something lovely to share.”<cite>— The Bake Alley team</cite></blockquote>
+        <div class="story-detail"><span class="line"></span><p>We make it easy to keep the good stuff close: dependable pantry staples, clever tools, and a little inspiration for your next warm memory.</p></div>
+      </section>
+
+      <section class="products-section" id="products">
+        <div class="section-heading"><div><p class="eyebrow">The pantry edit</p><h2>Good things for <i>good bakes.</i></h2></div><p class="inventory-caption">Curated ingredients & tools<br />for your next delicious idea.</p></div>
+        <div class="inventory-toolbar">
+          <div class="filters" role="tablist" aria-label="Product categories"><button class="filter active" data-category="All Items">All Items</button><button class="filter" data-category="Flours & Premixes">Flours & Premixes</button><button class="filter" data-category="Chocolate & Cocoa">Chocolate & Cocoa</button><button class="filter" data-category="Dairy & Fats">Dairy & Fats</button><button class="filter" data-category="Decorations & Packaging">Decorations & Packaging</button><button class="filter" data-category="Tools & Molds">Tools & Molds</button></div>
+          <div class="toolbar-bottom"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search the pantry..." aria-label="Search products" /></label><label class="toggle-label"><input id="available-only" type="checkbox" /><span class="toggle"></span> Available only</label></div>
+        </div>
+        <div class="inventory-status"><span id="result-count">Showing our favorites</span><span class="status-dot"></span><span>Pantry updated weekly</span></div>
+        <div class="product-grid" id="product-grid" aria-live="polite"></div>
+        <div class="empty-state" id="empty-state" hidden><strong>No ingredients found.</strong><span>Try another search or browse all items.</span></div>
+      </section>
+
+      <section class="testimonials">
+        <div class="section-heading compact"><div><p class="eyebrow">Baking with The Bake Alley</p><h2>Shared with <i>love.</i></h2></div><p class="inventory-caption">A few words from the people<br />who keep their ovens warm.</p></div>
+        <div class="testimonial-grid"><article><div class="quote-mark">“</div><p>The cocoa is wonderfully deep and smooth. Our brownies have never had so many people asking for “just one more.”</p><footer><span class="testimonial-avatar terracotta">L</span><span><strong>Leah M.</strong><small>Home baker, San Juan</small></span></footer></article><article><div class="quote-mark">“</div><p>Fast, kind service and a pantry that always seems to have exactly what my weekend bakes are missing.</p><footer><span class="testimonial-avatar sage">A</span><span><strong>Atelier Crumb</strong><small>Neighborhood pastry shop</small></span></footer></article><article><div class="quote-mark">“</div><p>The little details make shopping here feel special. My kids now choose our Saturday bake by picking the sprinkles.</p><footer><span class="testimonial-avatar oat">R</span><span><strong>Rina P.</strong><small>Sunday baker, Quezon City</small></span></footer></article></div>
+      </section>
+
+      <section class="contact-section" id="contact"><div><p class="eyebrow">Need a little more?</p><h2>Let's make room<br /><i>for your big bake.</i></h2></div><div class="contact-copy"><p>Planning a celebration, stocking a café, or just have a very specific chocolate craving? Tell us what you need and we’ll help you find it.</p><div class="contact-links"><a href="https://m.me/" target="_blank" rel="noreferrer"><span>↗</span> Messenger</a><a href="https://wa.me/" target="_blank" rel="noreferrer"><span>↗</span> WhatsApp</a><a href="viber://chat?number=+630000000000"><span>↗</span> Viber</a></div></div></section>
+    </main>
+
+    <footer class="site-footer"><div class="footer-top"><a class="brand light" href="#top" aria-label="The Bake Alley home"><img class="brand-logo" src="images/bakeAlley-Logo.jpg" alt="" /><span>The Bake <em>Alley</em></span></a><p>Baked with love in every detail.</p><div class="socials"><a href="#">Instagram</a><a href="#">Facebook</a></div></div><div class="footer-bottom"><span>Open Tue–Sun, 9:00 AM–6:00 PM</span><span>18 Malingap Street, Teachers Village, QC</span><span>© 2024 The Bake Alley</span></div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="script.js"></script>
+  </body>
+</html>
+</file>
+
+<file path="README.md">
+Act as an expert Full-Stack Copilot AI Web Developer, Conversion Rate Optimization (CRO) strategist, and Local SEO specialist[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span). Your objective is to generate, refactor, and optimize clean React/Next.js and Supabase code for "The Bake Alley"—a cozy, high-converting baking supply showcase website[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span).
+
+Build and maintain the codebase according to the following architectural and functional guidelines:
+
+1. BRAND AESTHETIC & SOOTHING VISUAL DESIGN:
+   - Palette: Warm cream background (#FAF6F0), soft chocolate brown (#4A3525), muted terracotta accents (#D97757), and soft sage green[span_9](start_span)[span_9](end_span).
+   - Typography: Elegant serif titles (e.g., Playfair Display or Cormorant Garamond) paired with a clean sans-serif body font (e.g., Plus Jakarta Sans)[span_10](start_span)[span_10](end_span).
+   - Emotional Vibe: Evoke the comforting, therapeutic warmth of home baking[span_11](start_span)[span_11](end_span). Use soothing micro-copy ("Sift through the noise. Take a breath. Bake something warm today.") and soft rounded corners with gentle warm shadows[span_12](start_span)[span_12](end_span).
+
+2. DYNAMIC REAL-TIME DATABASE & INVENTORY SYNC:
+   - Supabase Client Integration: Use @supabase/supabase-js with environment variables (`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`) initialized in `lib/supabaseClient.js`[span_13](start_span)[span_13](end_span).
+   - Database Schema (`products` table):
+     * `id` (uuid, primary key)[span_14](start_span)[span_14](end_span)
+     * `name` (text)[span_15](start_span)[span_15](end_span)
+     * `category` (text: 'Flours & Premixes', 'Chocolates & Dairy', 'Pans & Molds', 'Colors & Flavors', 'Packaging', 'Tools')[span_16](start_span)[span_16](end_span)[span_17](start_span)[span_17](end_span)
+     * `price` (numeric)[span_18](start_span)[span_18](end_span)
+     * `unit_size` (text, e.g., "500g", "1kg", "12-pack")[span_19](start_span)[span_19](end_span)[span_20](start_span)[span_20](end_span)
+     * `stock_quantity` (integer)[span_21](start_span)[span_21](end_span)
+     * `stock_status` (text: 'in_stock', 'low_stock', 'out_of_stock')[span_22](start_span)[span_22](end_span)[span_23](start_span)[span_23](end_span)
+     * `image_url` (text)[span_24](start_span)[span_24](end_span)
+   - Interactive Live Sync:
+     * Write real-time updates using `supabase.channel('public:products').on('postgres_changes', ...)` so stock changes made by admins or clients immediately update on screen without reloading[span_25](start_span)[span_25](end_span)[span_26](start_span)[span_26](end_span).
+     * Implement an Admin/Manager inventory controller panel or inline buttons (+/- counter) that updates `stock_quantity` and automatically toggles `stock_status` in Supabase[span_27](start_span)[span_27](end_span)[span_28](start_span)[span_28](end_span).
+
+3. WEB3FORMS & MULTI-CHANNEL CONTACT SYSTEM:
+   - Web3Forms Integration (Email Inquiries):
+     * Connect all site contact forms and product reservation modals to Web3Forms API (`https://api.web3forms.com/submit`) using `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`[span_29](start_span)[span_29](end_span).
+     * Form inputs must capture: Full Name, Email Address, Phone / Viber Number, Preferred Contact Method (Dropdown: Email, Viber, Messenger, Phone Call), Selected Product/Inquiry Details, and Message[span_30](start_span)[span_30](end_span)[span_31](start_span)[span_31](end_span)[span_32](start_span)[span_32](end_span)[span_33](start_span)[span_33](end_span).
+     * Return instant user-friendly success feedback ("Thank you! We'll reply via your preferred channel within 15 minutes.")[span_34](start_span)[span_34](end_span)[span_35](start_span)[span_35](end_span).
+   - Multi-Channel Instant Communication Section (#contact):
+     * Provide direct, clickable action buttons for instant client connection:
+       - 📧 Email: Direct Web3Forms contact form[span_36](start_span)[span_36](end_span).
+       - 📞 Direct Phone: `tel:` link for quick dialing[span_37](start_span)[span_37](end_span).
+       - 💬 Facebook Messenger: Direct URL link (`https://m.me/yourbakealleypage`)[span_38](start_span)[span_38](end_span)[span_39](start_span)[span_39](end_span)[span_40](start_span)[span_40](end_span).
+       - 📱 Viber: Direct Viber message trigger (`viber://chat?number=%2B639XXXXXXXXX` or Viber contact link)[span_41](start_span)[span_41](end_span)[span_42](start_span)[span_42](end_span)[span_43](start_span)[span_43](end_span).
+       - 🌐 Facebook Page: Direct social link to official Facebook page[span_44](start_span)[span_44](end_span).
+
+4. MARKETING, LEAD GENERATION & CRO:
+   - Dynamic Stock Status Badges on Cards:
+     * Soft Green Badge: "In Stock[span_45](start_span)[span_46](start_span)"[span_45](end_span)[span_46](end_span)
+     * Warm Yellow/Amber Badge: "Low Stock - Only a few left[span_47](start_span)[span_48](start_span)!"[span_47](end_span)[span_48](end_span)
+     * Gray/Red Badge: "Out of Stock[span_49](start_span)[span_50](start_span)"[span_49](end_span)[span_50](end_span)
+   - Item Inquiry & Reservation Modal: Clicking "Reserve / Inquire" on any product card opens a pre-filled Web3Forms modal containing the item name, price, and desired quantity[span_51](start_span)[span_51](end_span)[span_52](start_span)[span_52](end_span).
+   - Social Proof: 3-card testimonial grid featuring local home bakers and pastry shops praising item availability and customer service[span_53](start_span)[span_53](end_span).
+   - Sticky Mobile Action Bar (<768px):
+     * Floating bar fixed at the bottom with two tap actions:
+       - Button 1: "📞 Call / Viber" (`tel:` / Viber link)[span_54](start_span)[span_54](end_span)[span_55](start_span)[span_55](end_span)[span_56](start_span)[span_56](end_span)
+       - Button 2: "💬 Messenger Chat" (Facebook Messenger link)[span_57](start_span)[span_57](end_span)[span_58](start_span)[span_58](end_span)[span_59](start_span)[span_59](end_span)
+
+5. LOCAL SEO & TECHNICAL OPTIMIZATION:
+   - Structured Data: Inject JSON-LD Schema.org metadata inside `<head>` for a `Store` / `LocalBusiness` entity detailing store address, opening hours, contact channels, and product inventory[span_60](start_span)[span_60](end_span)[span_61](start_span)[span_61](end_span)[span_62](start_span)[span_62](end_span).
+   - Accessibility & Speed: Use semantic HTML (`<header>`, `<main>`, `<section>`, `<footer>`), explicit aria-labels, responsive images with alt text, and fast-loading component structures[span_63](start_span)[span_63](end_span)[span_64](start_span)[span_64](end_span)[span_65](start_span)[span_65](end_span).
+</file>
+
+<file path="script.js">
+const MOCK_PRODUCTS = [
+  {name:'Stoneground Bread Flour',category:'Flours & Premixes',size:'1kg',price:185,image:'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=700&q=80',stock:'Available'},
+  {name:'Callebaut Dark Callets',category:'Chocolate & Cocoa',size:'1kg',price:720,image:'https://images.unsplash.com/photo-1575377222312-55f8f016f25c?auto=format&fit=crop&w=700&q=80',stock:'Available'},
+  {name:'Almond Cream Cheese',category:'Dairy & Fats',size:'250g',price:230,image:'https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=700&q=80',stock:'Running Low'},
+  {name:'Dutch Process Cocoa',category:'Chocolate & Cocoa',size:'500g',price:310,image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80',stock:'Available'},
+  {name:'Vanilla Bean Paste',category:'Flours & Premixes',size:'118ml',price:495,image:'https://images.unsplash.com/photo-1614707267537-2b8a1f7a3c9b?auto=format&fit=crop&w=700&q=80',stock:'Running Low'},
+  {name:'Gold Cake Boards',category:'Decorations & Packaging',size:'10 pieces',price:160,image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80',stock:'Available'},
+  {name:'European Style Butter',category:'Dairy & Fats',size:'500g',price:290,image:'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=700&q=80',stock:'Out of Stock'},
+  {name:'Scalloped Tart Pan',category:'Tools & Molds',size:'9 inch',price:385,image:'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=700&q=80',stock:'Available'},
+  {name:'Rainbow Confetti Sprinkles',category:'Decorations & Packaging',size:'100g',price:145,image:'https://images.unsplash.com/photo-1588195538326-c5b1e5b80f5d?auto=format&fit=crop&w=700&q=80',stock:'Available'},
+  {name:'Silicone Spatula Set',category:'Tools & Molds',size:'3 pieces',price:260,image:'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=700&q=80',stock:'Available'}
+];
+let products = MOCK_PRODUCTS;
+let selectedCategory = 'All Items';
+const grid = document.querySelector('#product-grid');
+const emptyState = document.querySelector('#empty-state');
+const resultCount = document.querySelector('#result-count');
+const searchInput = document.querySelector('#search');
+const availableOnly = document.querySelector('#available-only');
+function peso(value){return `₱${value.toLocaleString('en-PH')}`}
+function render(){
+  const query = searchInput.value.trim().toLowerCase();
+  const visible = products.filter(product => {
+    const matchesCategory = selectedCategory === 'All Items' || product.category === selectedCategory;
+    const matchesSearch = !query || `${product.name} ${product.category}`.toLowerCase().includes(query);
+    const matchesStock = !availableOnly.checked || product.stock !== 'Out of Stock';
+    return matchesCategory && matchesSearch && matchesStock;
+  });
+  grid.innerHTML = visible.map(product => `<article class="product-card"><div class="product-image" style="background-image:url('${product.image}')"><span class="stock-badge ${product.stock === 'Running Low' ? 'low' : product.stock === 'Out of Stock' ? 'out' : ''}">${product.stock}</span></div><div class="product-info"><div class="product-category">${product.category}</div><h3 class="product-name">${product.name}</h3><div class="product-meta"><span class="product-size">${product.size}</span><strong class="product-price">${peso(product.price)}</strong></div></div></article>`).join('');
+  emptyState.hidden = visible.length > 0;
+  resultCount.textContent = visible.length ? `${visible.length} ${visible.length === 1 ? 'item' : 'items'} in view` : 'No items in view';
+}
+document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {selectedCategory = button.dataset.category;document.querySelector('.filter.active').classList.remove('active');button.classList.add('active');render()}));
+searchInput.addEventListener('input', render);availableOnly.addEventListener('change', render);
+async function loadProducts(){
+  const url = window.BAKE_ALLEY_SUPABASE_URL;
+  const key = window.BAKE_ALLEY_SUPABASE_ANON_KEY;
+  if (!url || !key || !window.supabase) return;
+  const client = window.supabase.createClient(url, key);
+  const {data, error} = await client.from('products').select('*').order('name');
+  if (!error && data?.length) products = data;
+  render();
+}
+render();
+loadProducts();
+</file>
+
+<file path="styles.css">
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+:root{--cream:#faf6f0;--paper:#fffdf9;--terracotta:#d97757;--terracotta-dark:#b75b42;--brown:#4a3525;--muted:#806f60;--oat:#eadcc8;--sage:#dce4d7;--line:#e4d9cb;--shadow:0 18px 50px rgba(86,57,34,.12)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--brown);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6}.announcement{background:var(--brown);color:#fff8ef;text-align:center;font-size:11px;letter-spacing:.04em;padding:9px 15px}.announcement span{color:#efb879;margin:0 12px}.site-header{height:82px;display:flex;align-items:center;justify-content:space-between;max-width:1240px;margin:auto;padding:0 40px}.brand{display:flex;align-items:center;gap:11px;color:var(--brown);font-weight:700;text-decoration:none;font-size:18px;letter-spacing:-.04em}.brand em{font-family:Fraunces,serif;font-weight:600;color:var(--terracotta)}.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50% 45% 50% 45%;background:var(--terracotta);color:white;font-size:11px;letter-spacing:-.1em;transform:rotate(-8deg)}.main-nav{display:flex;gap:31px}.main-nav a,.socials a{color:var(--muted);text-decoration:none;font-size:13px}.main-nav a:hover,.socials a:hover{color:var(--terracotta)}.header-action{color:var(--brown);text-decoration:none;font-size:12px;font-weight:700;border-bottom:1px solid var(--brown);padding-bottom:3px}.header-action span{color:var(--terracotta);margin-left:6px}.hero{max-width:1240px;margin:auto;min-height:575px;padding:54px 40px 72px;display:grid;grid-template-columns:1fr 1.05fr;align-items:center;gap:34px}.eyebrow{margin:0 0 19px;text-transform:uppercase;letter-spacing:.16em;font-size:10px;color:var(--terracotta-dark);font-weight:700}.eyebrow span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--terracotta);margin-right:9px}.hero h1,.story-strip h2,.section-heading h2,.contact-section h2{font:600 clamp(48px,6vw,81px)/.98 Fraunces,serif;letter-spacing:-.06em;margin:0;color:var(--brown)}i{font-style:normal;color:var(--terracotta)}.hero-text{max-width:410px;color:var(--muted);font-size:16px;margin:27px 0 29px}.button{display:inline-flex;gap:28px;align-items:center;padding:15px 19px;text-decoration:none;font-size:12px;font-weight:700}.button-dark{background:var(--brown);color:white}.button-dark span{color:#e8a382;font-size:17px}.hero-note{display:flex;align-items:center;gap:12px;margin-top:34px;color:var(--muted);font-size:11px;line-height:1.4}.hero-note strong{color:var(--brown);font-size:12px}.avatar-stack{display:flex}.avatar-stack span{width:27px;height:27px;border:2px solid var(--cream);border-radius:50%;display:grid;place-items:center;background:var(--oat);font-size:10px;color:var(--brown);margin-right:-8px}.avatar-stack span:nth-child(2){background:var(--sage)}.avatar-stack span:nth-child(3){background:#e6b69f}.hero-art{height:430px;position:relative;background:#e7d8c4;overflow:hidden}.sun{position:absolute;right:7%;top:8%;height:125px;width:125px;border:1px solid rgba(151,108,70,.25);border-radius:50%;box-shadow:0 0 0 22px rgba(255,255,255,.14),0 0 0 44px rgba(255,255,255,.13)}.bake-image{position:absolute;inset:0;background:linear-gradient(35deg,transparent 30%,rgba(110,70,35,.08)),url('https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1100&q=85') center/cover;mix-blend-mode:multiply;opacity:.88}.scribble{position:absolute;top:32px;left:36px;color:var(--terracotta-dark);font:700 18px/.9 Fraunces,serif;transform:rotate(-8deg);z-index:1}.hero-sticker{position:absolute;bottom:28px;right:28px;background:var(--sage);width:101px;height:101px;border-radius:50%;display:grid;place-content:center;text-align:center;color:var(--brown);font:18px/.9 Fraunces,serif;transform:rotate(8deg);z-index:1}.hero-sticker strong{font:10px 'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:.12em;margin-top:5px}.story-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);max-width:1240px;margin:auto;padding:70px 40px;display:grid;grid-template-columns:1.05fr 1.1fr 1fr;gap:55px;align-items:center}.story-strip h2{font-size:45px}.story-strip blockquote{margin:0;border-left:1px solid var(--terracotta);padding-left:29px;color:var(--brown);font:600 20px/1.3 Fraunces,serif}.story-strip cite{display:block;font:11px 'DM Sans',sans-serif;color:var(--muted);margin-top:18px}.story-detail{display:flex;gap:17px;color:var(--muted);font-size:12px}.story-detail .line{display:block;width:31px;height:1px;background:var(--terracotta);margin-top:10px;flex:none}.products-section,.testimonials{max-width:1240px;margin:auto;padding:92px 40px}.section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:42px}.section-heading h2{font-size:52px}.inventory-caption{color:var(--muted);font-size:12px;text-align:right;margin:0 0 5px}.inventory-toolbar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0}.filters{display:flex;gap:7px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filter{border:1px solid transparent;background:transparent;color:var(--muted);font:500 12px 'DM Sans';padding:9px 13px;white-space:nowrap;cursor:pointer}.filter:hover{color:var(--brown)}.filter.active{background:var(--brown);color:#fff;border-color:var(--brown)}.toolbar-bottom{display:flex;justify-content:space-between;align-items:center}.search{display:flex;align-items:center;gap:7px;color:var(--terracotta);border-bottom:1px solid var(--line);padding:4px 0;width:245px}.search span{font-size:20px}.search input{border:0;outline:0;background:transparent;color:var(--brown);font:12px 'DM Sans';width:100%}.toggle-label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer}.toggle-label input{position:absolute;opacity:0}.toggle{width:35px;height:19px;background:#d5c8b9;border-radius:20px;position:relative}.toggle:after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:white;top:2px;left:2px;transition:.2s}.toggle-label input:checked+.toggle{background:var(--terracotta)}.toggle-label input:checked+.toggle:after{left:18px}.inventory-status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;margin:19px 0}.inventory-status .status-dot{width:5px;height:5px;border-radius:50%;background:#87a37a}.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}.product-card{background:var(--paper);position:relative;min-width:0}.product-image{height:185px;background:#ede3d5 center/cover;position:relative}.product-image:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(57,35,20,.15))}.stock-badge{position:absolute;top:11px;left:11px;z-index:1;padding:5px 8px;background:rgba(255,253,249,.9);font-size:10px;color:#62805b}.stock-badge:before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:#87a37a;margin:0 5px 1px 0}.stock-badge.low{color:#9b6b21}.stock-badge.low:before{background:#dfa548}.stock-badge.out{color:#927e79}.stock-badge.out:before{background:#b79a93}.product-info{padding:17px 16px 18px}.product-category{text-transform:uppercase;letter-spacing:.13em;color:var(--terracotta-dark);font-size:9px;font-weight:700}.product-name{font:600 19px/1.05 Fraunces,serif;margin:8px 0 13px;min-height:40px}.product-meta{border-top:1px solid var(--line);padding-top:11px;display:flex;align-items:end;justify-content:space-between}.product-size{font-size:11px;color:var(--muted)}.product-price{font:700 15px Fraunces,serif;color:var(--brown)}.empty-state{text-align:center;padding:55px;color:var(--muted)}.empty-state strong,.empty-state span{display:block}.testimonials{padding-top:20px;padding-bottom:105px}.section-heading.compact{margin-bottom:35px}.section-heading.compact h2{font-size:49px}.testimonial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.testimonial-grid article{background:var(--paper);padding:27px 26px 24px;min-height:233px;display:flex;flex-direction:column}.quote-mark{font:50px/.6 Fraunces,serif;color:var(--terracotta)}.testimonial-grid article p{font:18px/1.3 Fraunces,serif;margin:12px 0 25px;max-width:300px}.testimonial-grid footer{display:flex;align-items:center;gap:10px;margin-top:auto}.testimonial-avatar{height:30px;width:30px;border-radius:50%;display:grid;place-items:center;font:13px Fraunces,serif}.terracotta{background:#ecc1ad}.sage{background:var(--sage)}.oat{background:var(--oat)}.testimonial-grid footer strong,.testimonial-grid footer small{display:block}.testimonial-grid footer strong{font-size:11px}.testimonial-grid footer small{font-size:10px;color:var(--muted)}.contact-section{background:var(--terracotta);color:#fff8ef;display:grid;grid-template-columns:1fr 1fr;gap:80px;padding:82px max(40px,calc((100vw - 1160px)/2));align-items:center}.contact-section .eyebrow{color:#ffe2ce}.contact-section h2{color:#fff8ef;font-size:55px}.contact-copy{max-width:370px}.contact-copy p{font:18px/1.35 Fraunces,serif}.contact-links{display:flex;gap:20px;flex-wrap:wrap;margin-top:30px}.contact-links a{color:#fff8ef;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.45);padding-bottom:5px;font-size:11px}.contact-links span{margin-right:8px}.site-footer{background:var(--brown);color:#f8eee3;padding:50px max(40px,calc((100vw - 1160px)/2)) 25px}.brand.light{color:#fff8ef}.brand.light em{color:#e79b7e}.footer-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:50px}.footer-top p{font:20px Fraunces,serif;color:#e7c5a9;margin:0}.socials{display:flex;gap:20px}.socials a{color:#ead9ca}.footer-bottom{border-top:1px solid rgba(255,255,255,.17);padding-top:20px;display:flex;justify-content:space-between;color:#bea99a;font-size:10px}@media(max-width:800px){.site-header{padding:0 20px;height:72px}.main-nav{display:none}.header-action{font-size:11px}.hero{display:block;padding:45px 20px 60px}.hero-copy{margin-bottom:42px}.hero-art{height:330px}.story-strip{display:block;padding:60px 20px}.story-strip blockquote{margin:40px 0}.products-section,.testimonials{padding:68px 20px}.section-heading{display:block}.section-heading h2{font-size:43px}.inventory-caption{text-align:left;margin-top:18px}.product-grid{grid-template-columns:repeat(2,1fr);gap:12px}.product-image{height:145px}.product-name{font-size:17px}.product-info{padding:14px}.testimonial-grid{grid-template-columns:1fr}.contact-section{display:block;padding:65px 20px}.contact-copy{margin-top:30px}.footer-top,.footer-bottom{display:block}.footer-top p{margin:28px 0}.socials{margin-top:20px}.footer-bottom span{display:block;margin-bottom:8px}}@media(max-width:430px){.product-grid{grid-template-columns:1fr 1fr}.product-image{height:125px}.product-name{font-size:15px}.hero h1{font-size:52px}}
+</file>
+
+<file path=".github/agents/bake-alley-web-cro.agent.md">
+---
+description: "Use when building, refactoring, reviewing, or optimizing The Bake Alley baking-supply website, including HTML/CSS/JavaScript, React or Next.js, Supabase inventory, Web3Forms inquiries, CRO, accessibility, responsive UI, or local SEO."
+name: "Bake Alley Web & CRO"
+tools: [read, search, edit, execute, web, todo]
+argument-hint: "Describe the Bake Alley page, workflow, bug, integration, or conversion goal to implement."
+user-invocable: true
+---
+You are the dedicated full-stack web developer, conversion-rate strategist, and local SEO specialist for The Bake Alley, a cozy baking-supply showcase and inquiry website.
+
+## Mission
+Build and maintain a trustworthy, warm, high-converting shopping and inquiry experience for local home bakers and pastry shops. Make the smallest coherent change that solves the request, preserve working behavior, and validate the result.
+
+The current project may be a static HTML/CSS/JavaScript site. Work with that architecture when it is the existing surface; introduce React, Next.js, or Supabase modules only when the project and task justify the migration. Do not assume a framework or package manager exists.
+
+## Brand and experience
+- Preserve the visual direction: warm cream `#FAF6F0`, chocolate brown `#4A3525`, muted terracotta `#D97757`, and soft sage accents.
+- Use an expressive serif for titles and a clean sans-serif for body copy. Keep typography calm, readable, and intentional.
+- Convey the comfort of home baking with restrained motion, warm shadows, soft corners, generous whitespace, and copy such as "Sift through the noise. Take a breath. Bake something warm today."
+- Favor clear product discovery, stock confidence, quick inquiry, and mobile contact actions over decorative or marketing-only sections.
+- Keep controls usable on touch screens and preserve visible focus states, semantic landmarks, keyboard access, and sufficient contrast.
+
+## Product and inventory behavior
+Use this product contract when integrating a database:
+- `id` uuid primary key
+- `name` text
+- `category` text: `Flours & Premixes`, `Chocolates & Dairy`, `Pans & Molds`, `Colors & Flavors`, `Packaging`, or `Tools`
+- `price` numeric
+- `unit_size` text
+- `stock_quantity` integer
+- `stock_status` text: `in_stock`, `low_stock`, or `out_of_stock`
+- `image_url` text
+
+For Supabase work, initialize the browser client from `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the project’s established client module, commonly `lib/supabaseClient.js`. Use `supabase.channel('public:products').on('postgres_changes', ...)` for live product changes and clean up subscriptions. Inventory controls must update quantity and derive status consistently: zero is out of stock; positive quantity at or below the project’s documented low-stock threshold is low stock; otherwise it is in stock. Never expose service-role keys in browser code.
+
+Show explicit product states:
+- In Stock
+- Low Stock - Only a few left!
+- Out of Stock
+
+Reservation or inquiry actions should carry the selected product, price, and desired quantity into the contact flow. Disable or adapt actions when an item is out of stock instead of implying availability.
+
+## Contact and lead generation
+Use Web3Forms at `https://api.web3forms.com/submit` with `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` when the project supports environment variables. Forms should collect full name, email, phone or Viber number, preferred contact method (Email, Viber, Messenger, or Phone Call), selected product or inquiry details, and message. Show a clear success state: "Thank you! We'll reply via your preferred channel within 15 minutes." Handle loading, failure, validation, and network errors without losing entered data.
+
+Provide accessible, clearly labeled contact paths for email/inquiry, phone via `tel:`, Messenger, Viber, and the official Facebook page. Keep placeholder contact URLs and phone numbers visibly configurable; never invent real business credentials or claim an unverified channel is live. On narrow screens, preserve a sticky action bar with Call / Viber and Messenger Chat actions, ensuring it does not cover form controls or content.
+
+## CRO and content
+- Make the primary action obvious and specific: browse inventory, reserve, inquire, call, or message.
+- Use real stock status, price, size, category, product imagery, and useful alt text.
+- Keep testimonials credible and clearly presented as provided content; do not fabricate reviews as factual evidence.
+- Keep empty, loading, error, and success states useful and concise.
+- Avoid dark patterns, false urgency, inaccessible modal traps, and unsupported claims about response times or availability.
+
+## Local SEO and performance
+Use semantic `header`, `main`, `section`, and `footer` landmarks, descriptive titles and meta descriptions, canonical-friendly routing, responsive images, and explicit labels. Add JSON-LD for a `Store` or `LocalBusiness` only from verified business information, including address, opening hours, contact channels, and inventory where appropriate. Escape or serialize structured data safely. Do not put secrets, private customer data, or guessed address details into metadata.
+
+Prefer lightweight browser code, progressive enhancement, stable responsive dimensions, and no unnecessary dependencies. Preserve the existing project’s font and styling conventions unless the task explicitly requests a redesign.
+
+## Working method
+1. Inspect the nearest owning file, component, symbol, or failing behavior before editing.
+2. State a short hypothesis about the controlling code path and choose the cheapest check that could disprove it.
+3. Make a focused change using existing patterns and APIs.
+4. Run the narrowest relevant validation: browser behavior, targeted test, lint, typecheck, or a static syntax check. For visual work, verify desktop and mobile layouts when browser tooling is available.
+5. Report changed files, validation performed, and any configuration or business details still required.
+
+## Boundaries
+- Do not commit changes, reset the repository, or overwrite unrelated user work.
+- Do not add dependencies or migrate architecture without checking the existing setup first.
+- Do not hardcode Supabase service-role keys, Web3Forms access keys, private customer information, or unverified contact details.
+- Do not claim database, form, real-time, SEO, or visual behavior was verified when the required environment or browser check was unavailable.
+- Keep unrelated refactors out of the change.
+
+## Output
+Conclude with a concise implementation summary, validation result, and any remaining setup values or risks. When reviewing code, list actionable findings first, ordered by severity, with file links; mention test gaps after the findings.
+
+Always update the design document everytime there is a change in any of the codes C:\Users\Ryan\Projects\Bake-Alley-Website\Bake-Alley-Website\docs\Function-Design.md
+
+tracking file with user prompts, reasoning summary, and generated artifcats. should be created under "agents/prompts/" with a filename that includes the date and time of the prompt
+</file>
+
+</files>

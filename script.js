@@ -12495,21 +12495,15 @@ function peso(value) {
   return '\u20B1' + Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function createChatLink(product) {
-  const msg = encodeURIComponent(`Hi Bake Alley! I'd like to reserve: ${product.name} (${product.size}) - ${peso(product.price)}. Is it available for pickup?`);
-  return `https://wa.me/639552181590?text=${msg}`;
-}
-
-// Setup Category Dropdown & Quick Filter Buttons
+// Generate Viber chat link for product reservations
 function createChatLink(product) {
   const msg = encodeURIComponent(`Hi Bake Alley! I'd like to reserve: ${product.name} (${product.size}) - ${peso(product.price)}. Is it available for pickup?`);
   return `viber://chat?number=%2B639552181590&draft=${msg}`;
 }
 
-// Setup Category Dropdown & Quick Filter Buttons
+// Setup Category Dropdown
 function setupCategoryFilters() {
   const selectElem = document.querySelector('#category-select');
-  const filtersContainer = document.querySelector('.filters');
 
   // Calculate product counts per category
   const categoryCounts = {};
@@ -12533,61 +12527,8 @@ function setupCategoryFilters() {
     selectElem.onchange = (e) => {
       selectedCategory = e.target.value;
       currentPage = 1;
-      updateFilterButtonsUI();
       render();
     };
-  }
-
-}
-
-  // Populate Quick Filter Pills
-  if (filtersContainer) {
-    const FEATURED_PILLS = [
-      'All Items',
-      'Butter',
-      'Chocolate Bars & Chips',
-      'Cocoa',
-      'Confectionery Sugar',
-      'Milk & Dairy',
-      'Flavorings',
-      'Flours',
-      'Baking Pans',
-      'Cake Toppers'
-    ];
-
-    let buttonsHtml = FEATURED_PILLS.map(cat => `
-      <button class="filter ${cat === selectedCategory ? 'active' : ''}" data-category="${cat}">
-        ${cat}
-      </button>
-    `).join('');
-
-    filtersContainer.innerHTML = buttonsHtml;
-
-    filtersContainer.querySelectorAll('.filter').forEach(button => {
-      button.onclick = () => {
-        selectedCategory = button.dataset.category;
-        currentPage = 1;
-
-        if (selectElem) {
-          selectElem.value = selectedCategory;
-        }
-        updateFilterButtonsUI();
-        render();
-      };
-    });
-  }
-}
-
-function updateFilterButtonsUI() {
-  const filtersContainer = document.querySelector('.filters');
-  if (filtersContainer) {
-    filtersContainer.querySelectorAll('.filter').forEach(btn => {
-      if (btn.dataset.category === selectedCategory) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
   }
 }
 
